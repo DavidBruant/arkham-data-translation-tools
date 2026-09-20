@@ -201,12 +201,6 @@ function findMissingTranslations(translationCard, referenceCard){
 
 
 const packsDir = 'pack'
-//const packDir = 'core'
-//const packDir = 'dwl'
-const packDir = 'ptc'
-//const packDir = 'return'
-//const packDir = 'side'
-//const packDir = 'eoe'
 
 const translationDir = 'translations'
 const languageDir = 'fr';
