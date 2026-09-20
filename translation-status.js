@@ -126,18 +126,6 @@ const similarFrenchTranslationFlavor = new Set([
     'Negotium perambulans in tenebris...'
 ])
 
-
-const translationDir = join('translations')
-const languageDir = 'fr';
-
-const packsDir = 'pack'
-//const packDir = 'core'
-//const packDir = 'dwl'
-const packDir = 'ptc'
-//const packDir = 'return'
-//const packDir = 'side'
-//const packDir = 'eoe'
-
 /**
  * This is meant to be an approximation
  * 
@@ -209,90 +197,132 @@ function findMissingTranslations(translationCard, referenceCard){
     return missingTranslations
 }
 
-const referencePackDirectory = join(ARKHAM_DATA_ROOT, packsDir, packDir)
-const translationPackDirectory = join(ARKHAM_DATA_ROOT, translationDir, languageDir, packsDir, packDir)
-const referencePackFilenames = await readdir(referencePackDirectory)
 
-for(const packFilename of referencePackFilenames){
-    //console.info(`\nChecking missing translations for ${packsDir}/${packDir}/${packFilename}`)
-    const referenceFilepath = join(referencePackDirectory, packFilename)
-    const translationFilepath = join(translationPackDirectory, packFilename)
 
-    const referenceFileString = await readFile(referenceFilepath, 'utf-8')
-    const translationFileString = await readFile(translationFilepath, 'utf-8')
 
-    /** @type {Card[]} */
-    const referenceData = JSON.parse(referenceFileString)
-    /** @type {Card[]} */
-    const translationData = JSON.parse(translationFileString)
+const packsDir = 'pack'
+//const packDir = 'core'
+//const packDir = 'dwl'
+const packDir = 'ptc'
+//const packDir = 'return'
+//const packDir = 'side'
+//const packDir = 'eoe'
 
-    /** @type {ReturnType<findMissingTranslations>} */
-    let missingTranslations = [];
-    for(const referenceCard of referenceData){
-        const referenceCardHasTranslatedProperties = translatableProperties.some(prop => typeof referenceCard[prop] === 'string')
+const translationDir = 'translations'
+const languageDir = 'fr';
 
-        if(referenceCardHasTranslatedProperties){
-            // for+find is O(n³) and maybe that's ok for the number of cards
-            const translationCard = translationData.find(({code: code2}) => referenceCard.code === code2)
+const referencePacksDirectory = join(ARKHAM_DATA_ROOT, packsDir)
 
-            if(!translationCard){
-                console.error(`Missing translated card for ${referenceFilepath} code ${referenceCard.code}`)
+const referencePackDirs = await readdir(referencePacksDirectory)
+
+for(const packDir of referencePackDirs){
+    console.info('Translation status for pack', packDir, 'language', languageDir)
+    const referencePackDirectory = join(referencePacksDirectory, packDir)
+    const referencePackFilenames = await readdir(referencePackDirectory)
+
+    const translationPackDirectory = join(ARKHAM_DATA_ROOT, translationDir, languageDir, packsDir, packDir)
+
+    for(const packFilename of referencePackFilenames){
+        //console.info(`\nChecking missing translations for ${packsDir}/${packDir}/${packFilename}`)
+        const referenceFilepath = join(referencePackDirectory, packFilename)
+        const translationFilepath = join(translationPackDirectory, packFilename)
+
+        const referenceFileString = await readFile(referenceFilepath, 'utf-8')
+        let translationFileString;
+
+        try{
+            translationFileString = await readFile(translationFilepath, 'utf-8')
+        }
+        catch(e){
+            // @ts-ignore
+            if(e.code === 'ENOENT'){
+                console.error(`❌ ${translationFilepath} does not exists while ${referenceFilepath} does`)
             }
             else{
-                const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard)
+                console.error(`❌ Error trying to read ${translationFilepath} file`, e)
+            }
+        }
 
-                if(missingTranslationsForThisCard.length >= 1){
-                    missingTranslations = [
-                        ...missingTranslations, 
-                        ...missingTranslationsForThisCard
-                    ]
+        if(translationFileString){
+            /** @type {Card[]} */
+            const referenceData = JSON.parse(referenceFileString)
+            /** @type {Card[]} */
+            const translationData = JSON.parse(translationFileString)
+
+            /** @type {ReturnType<findMissingTranslations>} */
+            let missingTranslations = [];
+            for(const referenceCard of referenceData){
+                const referenceCardHasTranslatedProperties = translatableProperties.some(prop => typeof referenceCard[prop] === 'string')
+
+                if(referenceCardHasTranslatedProperties){
+                    // for+find is O(n³) and maybe that's ok for the number of cards
+                    const translationCard = translationData.find(({code: code2}) => referenceCard.code === code2)
+
+                    if(!translationCard){
+                        console.error(`❌ Missing translated card for ${referenceFilepath} code ${referenceCard.code}`)
+                    }
+                    else{
+                        const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard)
+
+                        if(missingTranslationsForThisCard.length >= 1){
+                            missingTranslations = [
+                                ...missingTranslations, 
+                                ...missingTranslationsForThisCard
+                            ]
+                        }
+                    }
                 }
             }
+
+            console.info(`Translation status for ${packDir}/${packFilename} (${referenceData.length} cards)`)
+
+            const numberOfTranlatableTexts = sum(referenceData.map(card => {
+                let translatableItemsCount = 0;
+                for(const prop of translatableProperties){
+                    if(card[prop] && card[prop].trim().length >= 1){
+                        translatableItemsCount++
+                    }
+                }
+                return translatableItemsCount
+            }))
+
+            const numberOfMissingTranslations = missingTranslations.length
+            const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
+
+            console.info(
+                numberOfTranslatedTexts === numberOfTranlatableTexts ? '✅' :  (numberOfTranslatedTexts === 0 ? '🗋 ' : '🖋️ '),
+                `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`
+
+            )
+
+
+
         }
-    }
 
-    console.info(`Translation status for ${packDir}/${packFilename} (${referenceData.length} cards)`)
+        
+        /*
+        if(missingTranslations.length === 0){
+            console.info(`No missing ${languageDir} translations for ${packsDir}/${packDir}/${packFilename}`)
+        }
+        else{
 
-    const numberOfTranlatableTexts = sum(referenceData.map(card => {
-        let translatableItemsCount = 0;
-        for(const prop of translatableProperties){
-            if(card[prop] && card[prop].trim().length >= 1){
-                translatableItemsCount++
+
+            for(const {referenceCard, translationCard, property} of missingTranslations){
+                console.log('Missing translation', packDir, packFilename, 'card', referenceCard.code, 'property', property)
+                console.log('Reference:', referenceCard[property])
+                console.log('Translation:',  translationCard[property])
             }
         }
-        return translatableItemsCount
-    }))
-
-    const numberOfMissingTranslations = missingTranslations.length
-    const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
-
-    console.info(
-        numberOfTranslatedTexts === numberOfTranlatableTexts ? '✅' :  (numberOfTranslatedTexts === 0 ? '🗋 ' : '🖋️ '),
-        `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`
-
-    )
+        */
 
 
+        
 
-    /*
-    if(missingTranslations.length === 0){
-        console.info(`No missing ${languageDir} translations for ${packsDir}/${packDir}/${packFilename}`)
     }
-    else{
-
-
-        for(const {referenceCard, translationCard, property} of missingTranslations){
-            console.log('Missing translation', packDir, packFilename, 'card', referenceCard.code, 'property', property)
-            console.log('Reference:', referenceCard[property])
-            console.log('Translation:',  translationCard[property])
-        }
-    }
-    */
-
-
-    
-
 }
+
+
+
 
 
 
