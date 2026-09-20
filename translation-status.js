@@ -1,12 +1,32 @@
 //@ts-check
 
 import {join} from 'node:path'
-import {readFile, readdir} from 'node:fs/promises'
+import {readFile, readdir, stat} from 'node:fs/promises'
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
 
 if(!ARKHAM_DATA_ROOT){
     console.error(`Arkham data could not be found.\nMissing environment variable ARKHAM_DATA_ROOT.\nConfigure it and try again`)
+    process.exit(1)
+}
+
+try{
+    const rootStat = await stat(ARKHAM_DATA_ROOT)
+
+    if(!rootStat.isDirectory()){
+        console.error(`${ARKHAM_DATA_ROOT} is not a directory`)
+        process.exit(1)
+    }
+
+}
+catch(e){
+    if(e.code === 'ENOENT'){
+        console.error(`${ARKHAM_DATA_ROOT} from environement variable ARKHAM_DATA_ROOT does not exist`)
+    }
+    else{
+        console.error(`Error trying to reach directory ${ARKHAM_DATA_ROOT} from ARKHAM_DATA_ROOT environement variable (cwd: ${process.cwd()})`, e)
+    }
+
     process.exit(1)
 }
 
@@ -114,6 +134,7 @@ const packsDir = 'pack'
 const packDir = 'ptc'
 //const packDir = 'return'
 //const packDir = 'side'
+//const packDir = 'fhv'
 
 /**
  * This is meant to be an approximation
