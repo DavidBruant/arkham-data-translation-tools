@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/DavidBruant/arkham-data-translation-tools/issues"
   },
-  "homepage": "https://github.com/DavidBruant/arkham-data-translation-tools#readme"
+  "homepage": "https://github.com/DavidBruant/arkham-data-translation-tools#readme",
+  "dependencies": {
+    "d3-array": "3.2.4"
+  }
 }

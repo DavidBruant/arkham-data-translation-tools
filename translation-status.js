@@ -2,6 +2,7 @@
 
 import {join} from 'node:path'
 import {readFile, readdir, stat} from 'node:fs/promises'
+import {sum} from 'd3-array'
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
 
@@ -20,6 +21,7 @@ try{
 
 }
 catch(e){
+    // @ts-ignore
     if(e.code === 'ENOENT'){
         console.error(`${ARKHAM_DATA_ROOT} from environement variable ARKHAM_DATA_ROOT does not exist`)
     }
@@ -134,7 +136,7 @@ const packsDir = 'pack'
 const packDir = 'ptc'
 //const packDir = 'return'
 //const packDir = 'side'
-//const packDir = 'fhv'
+//const packDir = 'eoe'
 
 /**
  * This is meant to be an approximation
@@ -212,6 +214,7 @@ const translationPackDirectory = join(ARKHAM_DATA_ROOT, translationDir, language
 const referencePackFilenames = await readdir(referencePackDirectory)
 
 for(const packFilename of referencePackFilenames){
+    //console.info(`\nChecking missing translations for ${packsDir}/${packDir}/${packFilename}`)
     const referenceFilepath = join(referencePackDirectory, packFilename)
     const translationFilepath = join(translationPackDirectory, packFilename)
 
@@ -223,7 +226,6 @@ for(const packFilename of referencePackFilenames){
     /** @type {Card[]} */
     const translationData = JSON.parse(translationFileString)
 
-    console.info(`\nChecking missing translations for ${packsDir}/${packDir}/${packFilename}`)
     /** @type {ReturnType<findMissingTranslations>} */
     let missingTranslations = [];
     for(const referenceCard of referenceData){
@@ -249,19 +251,50 @@ for(const packFilename of referencePackFilenames){
         }
     }
 
+    console.info(`Translation status for ${packDir}/${packFilename} (${referenceData.length} cards)`)
+
+    const numberOfTranlatableTexts = sum(referenceData.map(card => {
+        let translatableItemsCount = 0;
+        for(const prop of translatableProperties){
+            if(card[prop] && card[prop].trim().length >= 1){
+                translatableItemsCount++
+            }
+        }
+        return translatableItemsCount
+    }))
+
+    const numberOfMissingTranslations = missingTranslations.length
+    const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
+
+    console.info(
+        numberOfTranslatedTexts === numberOfTranlatableTexts ? '✅' :  (numberOfTranslatedTexts === 0 ? '🗋 ' : '🖋️ '),
+        `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`
+
+    )
+
+
+
+    /*
     if(missingTranslations.length === 0){
-        console.log(`No missing ${languageDir} translations for ${packsDir}/${packDir}/${packFilename}`)
+        console.info(`No missing ${languageDir} translations for ${packsDir}/${packDir}/${packFilename}`)
     }
     else{
+
+
         for(const {referenceCard, translationCard, property} of missingTranslations){
             console.log('Missing translation', packDir, packFilename, 'card', referenceCard.code, 'property', property)
             console.log('Reference:', referenceCard[property])
             console.log('Translation:',  translationCard[property])
         }
     }
+    */
 
 
     
 
 }
+
+
+
+
 
