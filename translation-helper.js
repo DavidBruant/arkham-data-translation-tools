@@ -158,7 +158,7 @@ console.info('Transation of card', language, pack, file, card, property)
 const missingTranslation = missingTranslations.find(({property: prop}) => property === prop)
 
 if(!missingTranslation){
-    throw new TypeError(`No missing translation for card ${card.code}, property '${property}'`)
+    throw new TypeError(`No missing translation for card ${card}, property '${property}'`)
 }
 
 console.log('Original text:', missingTranslation.referenceCard[property])
