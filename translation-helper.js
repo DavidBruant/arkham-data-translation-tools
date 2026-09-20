@@ -5,7 +5,10 @@ import {readFile, readdir, stat} from 'node:fs/promises'
 
 import minimist from 'minimist'
 
-import { getCardMissingTranslationsList, getLanguageList, getPackFileList, getReferencePackList, getUntranslatedCardsList, packsDir, translationDir } from './shared.js'
+import { 
+    getCardMissingTranslationsList, getLanguageList, getPackFileList, getReferencePackList, getUntranslatedCardsList, 
+    packsDir, translationDir, translatableProperties
+} from './shared.js'
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
@@ -39,7 +42,15 @@ catch(e){
 
 const argv = minimist(process.argv.slice(2));
 
-const { language, pack, file, property } = argv
+const { 
+    language, 
+    pack, 
+    file, 
+} = argv
+
+/** @type {translatableProperties[number] | undefined} */
+const property = argv.property;
+
 // card may be parsed as a number. It'll be correct later
 let {card} = argv
 
@@ -105,7 +116,6 @@ catch(e){
     process.exit(1)
 }
 
-console.log('card', card)
 
 if(!card){
     console.log(`Choose an untranslated card with '--card <card>'`)
@@ -129,14 +139,13 @@ if(typeof card === 'number'){
         card = str.padStart(5, '0')
     }
 }
-console.log('card', card)
 
 
+const missingTranslations = await getCardMissingTranslationsList(ARKHAM_DATA_ROOT, pack, file, card, language)
 
 if(!property){
     console.log(`Choose a property to translate with '--property <property>'`)
     
-    const missingTranslations = await getCardMissingTranslationsList(ARKHAM_DATA_ROOT, pack, file, card, language)
     const missingTranslationProperties = missingTranslations.map(({property}) => property);
 
     console.log('Choices: ', [...missingTranslationProperties].join(' | '))
@@ -144,8 +153,9 @@ if(!property){
     process.exit()
 }
 
+console.info('Transation of card', language, pack, file, card, property)
+const missingTranslation = missingTranslations.find(({property: prop}) => property === prop)
 
-console.log('end')
-process.exit()
-
+console.log('Original text: ', missingTranslation?.referenceCard[property])
+console.log('Translated text: ', missingTranslation?.translationCard[property])
 
