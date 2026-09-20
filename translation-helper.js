@@ -9,6 +9,7 @@ import {
     getCardMissingTranslationsList, getLanguageList, getPackFileList, getReferencePackList, getUntranslatedCardsList, 
     packsDir, translationDir, translatableProperties
 } from './shared.js'
+import { suggestFrenchTranslation } from './suggestFrenchTranslation.js'
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
@@ -156,6 +157,15 @@ if(!property){
 console.info('Transation of card', language, pack, file, card, property)
 const missingTranslation = missingTranslations.find(({property: prop}) => property === prop)
 
-console.log('Original text: ', missingTranslation?.referenceCard[property])
-console.log('Translated text: ', missingTranslation?.translationCard[property])
+if(!missingTranslation){
+    throw new TypeError(`No missing translation for card ${card.code}, property '${property}'`)
+}
 
+console.log('Original text:', missingTranslation.referenceCard[property])
+console.log('Translated text:', missingTranslation.translationCard[property])
+
+const suggestedTranslation = suggestFrenchTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property)
+
+if(suggestedTranslation){
+    console.log('Suggested translation:', suggestedTranslation)
+}

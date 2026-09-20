@@ -17,7 +17,7 @@ node --env-file=.env translation-status.js
 ```sh
 node --env-file=.env translation-helper.js
 
-node --env-file=.env translation-helper.js --language fr --pack ptc --file tpm_encounter.json --card "03247" --property name
+node --env-file=.env translation-helper.js --language fr --pack ptc --file tpm_encounter.json --card 03247 --property name
 ```
 
 
