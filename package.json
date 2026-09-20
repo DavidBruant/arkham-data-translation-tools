@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/DavidBruant/arkham-data-translation-tools#readme",
   "dependencies": {
-    "d3-array": "3.2.4"
+    "d3-array": "3.2.4",
+    "minimist": "1.2.8"
   }
 }
