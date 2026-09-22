@@ -13,17 +13,13 @@ import { suggestFrenchTranslation } from './suggestFrenchTranslation.js'
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
-
-if(!ARKHAM_DATA_ROOT){
-    console.error(`Arkham data could not be found.\nMissing environment variable ARKHAM_DATA_ROOT.\nConfigure it and try again`)
-    process.exit(1)
-}
+const arkhamDataRoot = ARKHAM_DATA_ROOT || process.cwd()
 
 try{
-    const rootStat = await stat(ARKHAM_DATA_ROOT)
+    const rootStat = await stat(arkhamDataRoot)
 
     if(!rootStat.isDirectory()){
-        console.error(`${ARKHAM_DATA_ROOT} is not a directory`)
+        console.error(`${arkhamDataRoot} is not a directory`)
         process.exit(1)
     }
 
@@ -31,10 +27,15 @@ try{
 catch(e){
     // @ts-ignore
     if(e.code === 'ENOENT'){
-        console.error(`${ARKHAM_DATA_ROOT} from environement variable ARKHAM_DATA_ROOT does not exist`)
+        if(process.env.ARKHAM_DATA_ROOT){
+            console.error(`${arkhamDataRoot} from environement variable ARKHAM_DATA_ROOT does not exist`)
+        }
+        else{
+            console.error(`Missing ARKHAM_DATA_ROOT environment variable`)
+        }
     }
     else{
-        console.error(`Error trying to reach directory ${ARKHAM_DATA_ROOT} from ARKHAM_DATA_ROOT environement variable (cwd: ${process.cwd()})`, e)
+        console.error(`Error trying to reach directory ${arkhamDataRoot} from ARKHAM_DATA_ROOT environement variable (cwd: ${process.cwd()})`, e)
     }
 
     process.exit(1)
@@ -58,7 +59,7 @@ let {card} = argv
 if(!language){
     console.log(`Choose a language with '--language <language>'`)
     
-    const languageDirs = await getLanguageList(ARKHAM_DATA_ROOT)
+    const languageDirs = await getLanguageList(arkhamDataRoot)
     console.log('Choices: ', languageDirs.join(' | '))
 
     process.exit()
@@ -67,14 +68,14 @@ if(!language){
 if(!pack){
     console.log(`Choose a pack with '--pack <pack>'`)
     
-    const referencePackDirs = await getReferencePackList(ARKHAM_DATA_ROOT)
+    const referencePackDirs = await getReferencePackList(arkhamDataRoot)
     console.log('Choices: ', referencePackDirs.join(' | '))
 
     process.exit()
 }
 
 // Verifying the corresponding translation directory exists
-const translationPackDirectory = join(ARKHAM_DATA_ROOT, translationDir, language, packsDir, pack)
+const translationPackDirectory = join(arkhamDataRoot, translationDir, language, packsDir, pack)
 
 try{
     let _translationDirStat = await stat(translationPackDirectory)
@@ -94,14 +95,14 @@ catch(e){
 if(!file){
     console.log(`Choose a file with '--file <file>'`)
     
-    const packFiles = await getPackFileList(ARKHAM_DATA_ROOT, pack)
+    const packFiles = await getPackFileList(arkhamDataRoot, pack)
     console.log('Choices: ', packFiles.join(' | '))
 
     process.exit()
 }
 
 // Verifying the corresponding translation file exists
-const translationFile = join(ARKHAM_DATA_ROOT, translationDir, language, packsDir, pack, file)
+const translationFile = join(arkhamDataRoot, translationDir, language, packsDir, pack, file)
 
 try{
     let _translationDirStat = await stat(translationFile)
@@ -121,7 +122,7 @@ catch(e){
 if(!card){
     console.log(`Choose an untranslated card with '--card <card>'`)
     
-    const missingTranslations = await getUntranslatedCardsList(ARKHAM_DATA_ROOT, pack, file, language)
+    const missingTranslations = await getUntranslatedCardsList(arkhamDataRoot, pack, file, language)
 
     const missingTranslationCodes = new Set(missingTranslations.map(({referenceCard}) => referenceCard.code))
 
@@ -142,7 +143,7 @@ if(typeof card === 'number'){
 }
 
 
-const missingTranslations = await getCardMissingTranslationsList(ARKHAM_DATA_ROOT, pack, file, card, language)
+const missingTranslations = await getCardMissingTranslationsList(arkhamDataRoot, pack, file, card, language)
 
 if(!property){
     console.log(`Choose a property to translate with '--property <property>'`)
