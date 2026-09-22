@@ -4,10 +4,12 @@
 
 import {join} from 'node:path'
 import {readFile, readdir, stat} from 'node:fs/promises'
+import { parseArgs } from 'node:util';
 
+import { select } from '@inquirer/prompts';
 import {sum} from 'd3-array'
 
-import { findMissingTranslations, getReferencePackList, translatableProperties, translationDir } from './shared.js'
+import { findMissingTranslations, getLanguageList, getReferencePackList, translatableProperties, translationDir } from './shared.js'
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
@@ -39,6 +41,33 @@ catch(e){
     process.exit(1)
 }
 
+
+const options = /** @type {const} */ ({
+    language: {
+        type: 'string',
+        short: 'l',
+    }
+})
+
+let { values : {language} } = parseArgs({ options });
+
+
+if(!language){
+    const languageOptions = await getLanguageList(arkhamDataRoot)
+    console.log('Pick a language for which you want the translation status')
+
+    language = await select({
+        message: 'Choose a language for which you want the translation status',
+        choices: languageOptions.sort().map(l => ({name: l, value: l}))
+    });
+
+}
+
+
+console.log('language', language);
+
+
+process.exit()
 
 
 

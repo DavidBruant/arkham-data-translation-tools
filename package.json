@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/DavidBruant/arkham-data-translation-tools#readme",
   "dependencies": {
+    "@inquirer/prompts": "8.7.2",
     "d3-array": "3.2.4",
     "minimist": "1.2.8"
   }

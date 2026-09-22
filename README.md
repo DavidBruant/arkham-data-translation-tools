@@ -10,6 +10,10 @@ You need to set the `ARKHAM_DATA_ROOT` environment variable, for instance via a 
 
 ```sh
 node --env-file=.env translation-status.js
+node --env-file=.env translation-status.js --language fr
+node --env-file=.env translation-status.js --language fr --all
+node --env-file=.env translation-status.js --language fr --pack tpc
+node --env-file=.env translation-status.js --language fr --pack tpc --file tpm_encounter.json
 ```
 
 ## Getting help for translation
