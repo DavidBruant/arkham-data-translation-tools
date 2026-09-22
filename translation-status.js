@@ -11,17 +11,13 @@ import { findMissingTranslations, getReferencePackList, translatableProperties, 
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
-
-if(!ARKHAM_DATA_ROOT){
-    console.error(`Arkham data could not be found.\nMissing environment variable ARKHAM_DATA_ROOT.\nConfigure it and try again`)
-    process.exit(1)
-}
+const arkhamDataRoot = ARKHAM_DATA_ROOT || process.cwd()
 
 try{
-    const rootStat = await stat(ARKHAM_DATA_ROOT)
+    const rootStat = await stat(arkhamDataRoot)
 
     if(!rootStat.isDirectory()){
-        console.error(`${ARKHAM_DATA_ROOT} is not a directory`)
+        console.error(`${arkhamDataRoot} is not a directory`)
         process.exit(1)
     }
 
@@ -29,17 +25,19 @@ try{
 catch(e){
     // @ts-ignore
     if(e.code === 'ENOENT'){
-        console.error(`${ARKHAM_DATA_ROOT} from environement variable ARKHAM_DATA_ROOT does not exist`)
+        if(process.env.ARKHAM_DATA_ROOT){
+            console.error(`${arkhamDataRoot} from environement variable ARKHAM_DATA_ROOT does not exist`)
+        }
+        else{
+            console.error(`Missing ARKHAM_DATA_ROOT environment variable`)
+        }
     }
     else{
-        console.error(`Error trying to reach directory ${ARKHAM_DATA_ROOT} from ARKHAM_DATA_ROOT environement variable (cwd: ${process.cwd()})`, e)
+        console.error(`Error trying to reach directory ${arkhamDataRoot} from ARKHAM_DATA_ROOT environement variable (cwd: ${process.cwd()})`, e)
     }
 
     process.exit(1)
 }
-
-
-
 
 
 
@@ -49,16 +47,16 @@ const packsDir = 'pack'
 
 const languageDir = 'fr';
 
-const referencePacksDirectory = join(ARKHAM_DATA_ROOT, packsDir)
+const referencePacksDirectory = join(arkhamDataRoot, packsDir)
 
-const referencePackDirs = await getReferencePackList(ARKHAM_DATA_ROOT)
+const referencePackDirs = await getReferencePackList(arkhamDataRoot)
 
 for(const packDir of referencePackDirs){
     console.info('Translation status for pack', packDir, 'language', languageDir)
     const referencePackDirectory = join(referencePacksDirectory, packDir)
     const referencePackFilenames = await readdir(referencePackDirectory)
 
-    const translationPackDirectory = join(ARKHAM_DATA_ROOT, translationDir, languageDir, packsDir, packDir)
+    const translationPackDirectory = join(arkhamDataRoot, translationDir, languageDir, packsDir, packDir)
 
     for(const packFilename of referencePackFilenames){
         //console.info(`\nChecking missing translations for ${packsDir}/${packDir}/${packFilename}`)
