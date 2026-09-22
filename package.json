@@ -1,6 +1,6 @@
 {
   "name": "arkham-data-translation-tools",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Tools to help translation of https://github.com/Kamalisk/arkhamdb-json-data",
   "main": "index.js",
   "scripts": {

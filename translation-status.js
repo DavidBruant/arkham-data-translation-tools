@@ -1,6 +1,6 @@
 //@ts-check
 
-/** @import {Card} from './shared.js' */
+/** @import {Card, MissingTranslation} from './shared.js' */
 
 import {join} from 'node:path'
 import {readFile, readdir, stat} from 'node:fs/promises'
@@ -9,7 +9,7 @@ import { parseArgs } from 'node:util';
 import { select } from '@inquirer/prompts';
 import {sum} from 'd3-array'
 
-import { findMissingTranslations, getLanguageList, getReferencePackList, translatableProperties, translationDir } from './shared.js'
+import { findMissingTranslations, getLanguageList, getReferencePackList, packsDir, translatableProperties, translationDir } from './shared.js'
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
@@ -46,123 +46,282 @@ const options = /** @type {const} */ ({
     language: {
         type: 'string',
         short: 'l',
+    },
+    all: {
+        type: 'boolean',
+        short: 'a'
+    },
+    pack: {
+        type: 'string',
+        short: 'p'
     }
 })
 
-let { values : {language} } = parseArgs({ options });
-
+let { values : {language, all, pack} } = parseArgs({ options });
 
 if(!language){
     const languageOptions = await getLanguageList(arkhamDataRoot)
-    console.log('Pick a language for which you want the translation status')
 
     language = await select({
         message: 'Choose a language for which you want the translation status',
         choices: languageOptions.sort().map(l => ({name: l, value: l}))
     });
+}
 
+if(all && pack){
+    console.error(`You cannot choose both --all and --pack <pack>. You need to pick only one`)
+}
+
+if(!all && !pack){
+    const packOptions = await getReferencePackList(arkhamDataRoot)
+
+    pack = await select({
+        message: 'Choose a pack for which you want the translation status',
+        choices: packOptions.sort().map(l => ({name: l, value: l}))
+    });
 }
 
 
-console.log('language', language);
-
-
-process.exit()
-
-
-
-
-const packsDir = 'pack'
-
-const languageDir = 'fr';
-
 const referencePacksDirectory = join(arkhamDataRoot, packsDir)
 
-const referencePackDirs = await getReferencePackList(arkhamDataRoot)
 
-for(const packDir of referencePackDirs){
-    console.info('Translation status for pack', packDir, 'language', languageDir)
-    const referencePackDirectory = join(referencePacksDirectory, packDir)
-    const referencePackFilenames = await readdir(referencePackDirectory)
+if(pack){
+    console.info(`📖 Translation status for pack '${pack}' language '${language}'`)
 
-    const translationPackDirectory = join(arkhamDataRoot, translationDir, languageDir, packsDir, packDir)
+    const packTranslationStatus = await getPackTranslationStatus(language, pack)
 
-    for(const packFilename of referencePackFilenames){
-        //console.info(`\nChecking missing translations for ${packsDir}/${packDir}/${packFilename}`)
-        const referenceFilepath = join(referencePackDirectory, packFilename)
-        const translationFilepath = join(translationPackDirectory, packFilename)
+    const errors = packTranslationStatus.filter(fileTranslationStatus => !!fileTranslationStatus.error)
 
-        const referenceFileString = await readFile(referenceFilepath, 'utf-8')
-        let translationFileString;
-
-        try{
-            translationFileString = await readFile(translationFilepath, 'utf-8')
-        }
-        catch(e){
-            // @ts-ignore
-            if(e.code === 'ENOENT'){
-                console.error(`❌ ${translationFilepath} does not exists while ${referenceFilepath} does`)
+    const numberOfTranlatableTexts = sum(packTranslationStatus.map(fileTranslationStatus => {
+        return sum(fileTranslationStatus.referenceCards.map(card => {
+            let translatableItemsCount = 0;
+            for(const prop of translatableProperties){
+                if(card[prop] && card[prop].length >= 1){
+                    translatableItemsCount++
+                }
             }
-            else{
-                console.error(`❌ Error trying to read ${translationFilepath} file`, e)
-            }
+            return translatableItemsCount
+        }))
+    }))
+
+    const numberOfMissingTranslations = sum(packTranslationStatus.map(fileTranslationStatus => {
+        return fileTranslationStatus.missingTranslations?.length || 0
+    }))
+    
+    console.log('numberOfTranlatableTexts', numberOfTranlatableTexts)
+    console.log('numberOfMissingTranslations', numberOfMissingTranslations)
+
+
+    
+    const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
+
+
+    const packTextsCount = 5
+    const packtranslatedTextsCount = 4 
+
+    if(errors.length === 0 && packtranslatedTextsCount === packTextsCount){
+        console.log('✅ Every card in the pack is translated! Gain 5 resource.')
+    }
+    else{
+        if(packtranslatedTextsCount === 0){
+            console.log('🗋 No card in the pack is translated. Take 1 horror.')
         }
+        else{
+            console.log(`📜 ${packtranslatedTextsCount}/${packTextsCount} texts translated`)
 
-        if(translationFileString){
-            /** @type {Card[]} */
-            const referenceData = JSON.parse(referenceFileString)
-            /** @type {Card[]} */
-            const translationData = JSON.parse(translationFileString)
+            packTranslationStatus.sort((fileTranslationStatus1, fileTranslationStatus2) => {
+                if(fileTranslationStatus1.error && !fileTranslationStatus2.error){
+                    return -1
+                }
+                
+                if(!fileTranslationStatus1.error && fileTranslationStatus2.error){
+                    return 1
+                }
 
-            /** @type {ReturnType<findMissingTranslations>} */
-            let missingTranslations = [];
-            for(const referenceCard of referenceData){
-                const referenceCardHasTranslatedProperties = translatableProperties.some(prop => typeof referenceCard[prop] === 'string')
+                if(fileTranslationStatus1.error && fileTranslationStatus2.error){
+                    return fileTranslationStatus1.packFilename.localeCompare(fileTranslationStatus2.packFilename)
+                }
 
-                if(referenceCardHasTranslatedProperties){
-                    // for+find is O(n³) and maybe that's ok for the number of cards
-                    const translationCard = translationData.find(({code: code2}) => referenceCard.code === code2)
+                return fileTranslationStatus1.missingTranslations.length - fileTranslationStatus2.missingTranslations.length
+            })
 
-                    if(!translationCard){
-                        console.error(`❌ Missing translated card for ${referenceFilepath} code ${referenceCard.code}`)
+            for(const fileTranslationStatus of packTranslationStatus){
+                if(fileTranslationStatus.error){
+                    console.log(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
+                }
+                else{
+                    const fileTextsCount = 5
+                    const filetranslatedTextsCount = 4 
+
+                    if(filetranslatedTextsCount === fileTextsCount){
+                        console.log('✅ Every card in the file is translated! Gain 1 resource.')
                     }
                     else{
-                        const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard)
-
-                        if(missingTranslationsForThisCard.length >= 1){
-                            missingTranslations = [
-                                ...missingTranslations, 
-                                ...missingTranslationsForThisCard
-                            ]
+                        if(filetranslatedTextsCount === 0){
+                            console.log('🗋 No card in the file is translated. Take 1 horror.')
+                        }
+                        else{
+                            console.log(`📜 ${filetranslatedTextsCount}/${fileTextsCount} texts translated`)
                         }
                     }
                 }
             }
-
-            console.info(`Translation status for ${packDir}/${packFilename} (${referenceData.length} cards)`)
-
-            const numberOfTranlatableTexts = sum(referenceData.map(card => {
-                let translatableItemsCount = 0;
-                for(const prop of translatableProperties){
-                    if(card[prop] && card[prop].trim().length >= 1){
-                        translatableItemsCount++
-                    }
-                }
-                return translatableItemsCount
-            }))
-
-            const numberOfMissingTranslations = missingTranslations.length
-            const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
-
-            console.info(
-                numberOfTranslatedTexts === numberOfTranlatableTexts ? '✅' :  (numberOfTranslatedTexts === 0 ? '🗋 ' : '🖋️ '),
-                `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`
-
-            )
-
-
-
         }
+    }
+}
+
+
+
+
+/**
+ * 
+ * @param {string} language 
+ * @param {string} pack 
+ */
+async function getPackTranslationStatus(language, pack){
+    
+    const referencePackDirectory = join(referencePacksDirectory, pack)
+    const referencePackFilenames = await readdir(referencePackDirectory)
+
+    return Promise.all(
+        referencePackFilenames.map(packFilename => getFileTranslationStatus(language, pack, packFilename))
+    )
+}
+
+
+
+
+
+/**
+ * 
+ * @param {string} language 
+ * @param {string} pack 
+ * @param {string} packFilename 
+ * @returns { Promise<
+ *  {missingTranslations: MissingTranslation[], referenceCards: Card[], translationCards: Card[], packFilename: string}
+ *  | {error: Error, referenceCards: Card[], packFilename: string}
+ * >}
+ */
+async function getFileTranslationStatus(language, pack, packFilename){
+    const referencePackDirectory = join(referencePacksDirectory, pack)
+
+    const translationPackDirectory = join(arkhamDataRoot, translationDir, language, packsDir, pack)
+    const referenceFilepath = join(referencePackDirectory, packFilename)
+    const translationFilepath = join(translationPackDirectory, packFilename)
+
+    const referenceFileString = await readFile(referenceFilepath, 'utf-8')
+    /** @type {Card[]} */
+    const referenceCards = JSON.parse(referenceFileString)
+    let translationFileString;
+
+    try{
+        translationFileString = await readFile(translationFilepath, 'utf-8')
+    }
+    catch(e){
+        let error;
+
+        // @ts-ignore
+        if(e.code === 'ENOENT'){
+            error = new Error(`${translationFilepath} does not exists while ${referenceFilepath} does`)
+        }
+        else{
+            error = new Error(`Error trying to read ${translationFilepath} file. ${e}`)
+        }
+        
+        return {
+            error,
+            referenceCards,
+            packFilename
+        }
+    }
+
+    
+    /** @type {Card[]} */
+    const translationCards = JSON.parse(translationFileString)
+
+    /** @type {MissingTranslation[]} */
+    let missingTranslations = [];
+
+    /** @type {Card['code'][]} */
+    const missingTranslationCards = []
+
+    for(const referenceCard of referenceCards){
+        const referenceCardHasTranslatedProperties = translatableProperties.some(prop => typeof referenceCard[prop] === 'string')
+
+        if(referenceCardHasTranslatedProperties){
+            // for+find is O(n³) and maybe that's ok for a number of cards in the 1000s max
+            const translationCard = translationCards.find(({code: code2}) => referenceCard.code === code2)
+
+            if(!translationCard){
+                missingTranslationCards.push(referenceCard.code)
+            }
+            else{
+                const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard)
+
+                if(missingTranslationsForThisCard.length >= 1){
+                    missingTranslations = [
+                        ...missingTranslations, 
+                        ...missingTranslationsForThisCard
+                    ]
+                }
+            }
+        }
+    }
+
+    if(missingTranslationCards.length >= 1){
+        return {
+            error: new Error(`Missing translation cards in ${translationFilepath} for cards ${missingTranslationCards.join(', ')} `),
+            referenceCards,
+            packFilename
+        }
+    }
+
+    return {
+        referenceCards,
+        translationCards,
+        missingTranslations,
+        packFilename
+    }
+}
+
+
+
+if(all){
+    const referencePackDirs = await getReferencePackList(arkhamDataRoot)
+
+    console.log('PPP do overall translation status for the given language')
+    process.exit()
+}
+
+
+
+/*
+        console.info(`Translation status for ${pack}/${packFilename} (${referenceCards.length} cards)`)
+
+        const numberOfTranlatableTexts = sum(referenceCards.map(card => {
+            let translatableItemsCount = 0;
+            for(const prop of translatableProperties){
+                if(card[prop] && card[prop].trim().length >= 1){
+                    translatableItemsCount++
+                }
+            }
+            return translatableItemsCount
+        }))
+
+        const numberOfMissingTranslations = missingTranslations.length
+        const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
+
+        console.info(
+            numberOfTranslatedTexts === numberOfTranlatableTexts ? '✅' :  (numberOfTranslatedTexts === 0 ? '🗋 ' : '🖋️ '),
+            `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`
+
+        )
+*/
+
+
+
+//for(const packDir of referencePackDirs){
+    
 
         
         /*
@@ -183,8 +342,8 @@ for(const packDir of referencePackDirs){
 
         
 
-    }
-}
+    
+//}
 
 
 

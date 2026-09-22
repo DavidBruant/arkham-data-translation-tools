@@ -23,6 +23,16 @@ export const translationDir = 'translations'
  * 
 */
 
+/** 
+ * @typedef {Object} MissingTranslation
+ * @prop {Card} referenceCard
+ * @prop {Card} translationCard
+ * @prop {translatableProperties[number]} property
+ * 
+*/
+
+
+
 export const translatableProperties = /** @type {const} */ (['name', 'traits', 'text', 'flavor', 'back_name', 'back_flavor', 'back_text']);
 
 
@@ -121,14 +131,17 @@ export function getPackFileList(arkhamDataRootDir, pack){
     return readdir(packDirectory)
 }
 
+
 /**
  * This is meant to be an approximation
  * 
  * @param {Card} translationCard 
  * @param {Card} referenceCard
+ * @returns {MissingTranslation[]}
  */
 export function findMissingTranslations(translationCard, referenceCard){
 
+    /** @type {ReturnType<findMissingTranslations>} */
     const missingTranslations = []
 
     for(const prop of translatableProperties){
