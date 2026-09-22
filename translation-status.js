@@ -4,7 +4,7 @@
 
 import {join} from 'node:path'
 import {readFile, readdir, stat} from 'node:fs/promises'
-import { parseArgs } from 'node:util';
+import { parseArgs, styleText } from 'node:util';
 
 import { select } from '@inquirer/prompts';
 import {sum} from 'd3-array'
@@ -85,6 +85,31 @@ if(!all && !pack){
 const referencePacksDirectory = join(arkhamDataRoot, packsDir)
 
 
+
+/**
+ * @param {{ referenceCards: Card[] }} fileTranslationStatus
+ */
+function getNumberOfTranslatableTextsInFile(fileTranslationStatus){
+    return sum(fileTranslationStatus.referenceCards.map(card => {
+        let translatableItemsCount = 0;
+        for(const prop of translatableProperties){
+            if(card[prop] && card[prop].length >= 1){
+                translatableItemsCount++
+            }
+        }
+        return translatableItemsCount
+    }))
+}
+
+/**
+ * @param {{ missingTranslations: MissingTranslation[] | undefined }} fileTranslationStatus
+ */
+function getNumberMissingTranslationsInFile(fileTranslationStatus){
+    return fileTranslationStatus.missingTranslations?.length || 0
+}
+
+
+
 if(pack){
     console.info(`📖 Translation status for pack '${pack}' language '${language}'`)
 
@@ -92,42 +117,24 @@ if(pack){
 
     const errors = packTranslationStatus.filter(fileTranslationStatus => !!fileTranslationStatus.error)
 
-    const numberOfTranlatableTexts = sum(packTranslationStatus.map(fileTranslationStatus => {
-        return sum(fileTranslationStatus.referenceCards.map(card => {
-            let translatableItemsCount = 0;
-            for(const prop of translatableProperties){
-                if(card[prop] && card[prop].length >= 1){
-                    translatableItemsCount++
-                }
-            }
-            return translatableItemsCount
-        }))
-    }))
+    const numberOfTranlatableTexts = sum(packTranslationStatus.map(getNumberOfTranslatableTextsInFile))
 
-    const numberOfMissingTranslations = sum(packTranslationStatus.map(fileTranslationStatus => {
-        return fileTranslationStatus.missingTranslations?.length || 0
-    }))
-    
-    console.log('numberOfTranlatableTexts', numberOfTranlatableTexts)
-    console.log('numberOfMissingTranslations', numberOfMissingTranslations)
-
-
+    const numberOfMissingTranslations = sum(packTranslationStatus.map(getNumberMissingTranslationsInFile))
     
     const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
 
-
-    const packTextsCount = 5
-    const packtranslatedTextsCount = 4 
-
-    if(errors.length === 0 && packtranslatedTextsCount === packTextsCount){
-        console.log('✅ Every card in the pack is translated! Gain 5 resource.')
+    if(errors.length === 0 && numberOfTranslatedTexts === numberOfTranlatableTexts){
+        console.log(`✅ Every card in the pack is translated!`);
+        console.log(
+            styleText('italic', 'Each investigator earns 1 bonus experience, as they reflect, satisfied of the state of translation')
+        )
     }
     else{
-        if(packtranslatedTextsCount === 0){
+        if(numberOfTranslatedTexts === 0){
             console.log('🗋 No card in the pack is translated. Take 1 horror.')
         }
         else{
-            console.log(`📜 ${packtranslatedTextsCount}/${packTextsCount} texts translated`)
+            console.log(`📜 ${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated`)
 
             packTranslationStatus.sort((fileTranslationStatus1, fileTranslationStatus2) => {
                 if(fileTranslationStatus1.error && !fileTranslationStatus2.error){
@@ -142,26 +149,29 @@ if(pack){
                     return fileTranslationStatus1.packFilename.localeCompare(fileTranslationStatus2.packFilename)
                 }
 
-                return fileTranslationStatus1.missingTranslations.length - fileTranslationStatus2.missingTranslations.length
+                return fileTranslationStatus2.missingTranslations.length - fileTranslationStatus1.missingTranslations.length
             })
 
             for(const fileTranslationStatus of packTranslationStatus){
+                const {packFilename} = fileTranslationStatus;
+
                 if(fileTranslationStatus.error){
                     console.log(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
                 }
                 else{
-                    const fileTextsCount = 5
-                    const filetranslatedTextsCount = 4 
+                    const numberOfTranslatableTexts = getNumberOfTranslatableTextsInFile(fileTranslationStatus)
+                    const numberMissingTranslations = getNumberMissingTranslationsInFile(fileTranslationStatus)
+                    const numberOfTranslatedTexts =  numberOfTranslatableTexts - numberMissingTranslations
 
-                    if(filetranslatedTextsCount === fileTextsCount){
-                        console.log('✅ Every card in the file is translated! Gain 1 resource.')
+                    if(numberOfTranslatedTexts === numberOfTranslatableTexts){
+                        console.log('✅', styleText('bold', packFilename))
                     }
                     else{
-                        if(filetranslatedTextsCount === 0){
-                            console.log('🗋 No card in the file is translated. Take 1 horror.')
+                        if(numberOfTranslatedTexts === 0){
+                            console.log('🗋 ', styleText('bold', packFilename), 'No card in the file is translated. Take 1 horror.')
                         }
                         else{
-                            console.log(`📜 ${filetranslatedTextsCount}/${fileTextsCount} texts translated`)
+                            console.log(`📜 ${styleText('bold', packFilename)} ${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)
                         }
                     }
                 }
