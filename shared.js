@@ -7,33 +7,11 @@ import {readFile, readdir, stat} from 'node:fs/promises'
 export const packsDir = 'pack'
 export const translationDir = 'translations'
 
-/** 
- * @typedef {Object} Card
- * @prop {string} code
- * @prop {string} type_code
- * @prop {string} [name]
- * @prop {string} [slot]
- * @prop {string} [traits]
- * @prop {string} [text]
- * @prop {string} [flavor]
- * @prop {string} [back_name]
- * @prop {string} [back_text]
- * @prop {string} [back_flavor]
- * @prop {boolean} [is_unique]
- * 
-*/
-
-/** 
- * @typedef {Object} MissingTranslation
- * @prop {Card} referenceCard
- * @prop {Card} translationCard
- * @prop {translatableProperties[number]} property
- * 
-*/
 
 
 
-export const translatableProperties = /** @type {const} */ (['name', 'traits', 'text', 'flavor', 'back_name', 'back_flavor', 'back_text']);
+/** @type {TranslatableProperty[]} */
+export const translatableProperties = ['name', 'traits', 'text', 'flavor', 'back_name', 'back_flavor', 'back_text'];
 
 
 // traits that are exactly the same in French as in English

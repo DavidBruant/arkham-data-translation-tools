@@ -1,7 +1,5 @@
 //@ts-check
 
-/** @import {Card, MissingTranslation} from './shared.js' */
-
 import {join} from 'node:path'
 import {readFile, readdir, stat} from 'node:fs/promises'
 import { parseArgs, styleText } from 'node:util';
@@ -102,11 +100,24 @@ function getNumberOfTranslatableTextsInFile(fileTranslationStatus){
 }
 
 /**
- * @param {{ missingTranslations: MissingTranslation[] | undefined }} fileTranslationStatus
+ * 
+ * @param {any} x 
+ * @returns {x is FileTranslationStatusError}
+ */
+function isFileTranslationStatusError(x){
+    return typeof x.packFilename === 'string' && Array.isArray(x.referenceCards) && x.error
+}
+
+
+/**
+ * @param {FileTranslationStatus} fileTranslationStatus
  */
 function getNumberMissingTranslationsInFile(fileTranslationStatus){
-    return fileTranslationStatus.missingTranslations?.length || 0
+    return isFileTranslationStatusError(fileTranslationStatus) ?
+        0 : 
+        fileTranslationStatus.missingTranslations.length
 }
+
 
 
 
@@ -115,7 +126,7 @@ if(pack){
 
     const packTranslationStatus = await getPackTranslationStatus(language, pack)
 
-    const errors = packTranslationStatus.filter(fileTranslationStatus => !!fileTranslationStatus.error)
+    const errors = packTranslationStatus.filter(isFileTranslationStatusError)
 
     const numberOfTranlatableTexts = sum(packTranslationStatus.map(getNumberOfTranslatableTextsInFile))
 
@@ -134,28 +145,31 @@ if(pack){
             console.log('🗋 No card in the pack is translated. Take 1 horror.')
         }
         else{
-            console.log(`📜 ${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated`)
+            console.log(`📜 Total - ${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated`)
 
-            packTranslationStatus.sort((fileTranslationStatus1, fileTranslationStatus2) => {
-                if(fileTranslationStatus1.error && !fileTranslationStatus2.error){
-                    return -1
+            packTranslationStatus.sort((fileTS1, fileTS2) => {
+                // show errors first
+                // then partial translations
+                // then complete translations
+                if(isFileTranslationStatusError(fileTS1)){
+                    if(isFileTranslationStatusError(fileTS2))
+                        return fileTS1.packFilename.localeCompare(fileTS2.packFilename)
+                    else
+                        return -1
                 }
-                
-                if(!fileTranslationStatus1.error && fileTranslationStatus2.error){
+
+                if(isFileTranslationStatusError(fileTS2)){
+                    // isFileTranslationStatusError(fileTS1) === false
                     return 1
                 }
 
-                if(fileTranslationStatus1.error && fileTranslationStatus2.error){
-                    return fileTranslationStatus1.packFilename.localeCompare(fileTranslationStatus2.packFilename)
-                }
-
-                return fileTranslationStatus2.missingTranslations.length - fileTranslationStatus1.missingTranslations.length
+                return fileTS2.missingTranslations.length - fileTS1.missingTranslations.length
             })
 
             for(const fileTranslationStatus of packTranslationStatus){
                 const {packFilename} = fileTranslationStatus;
 
-                if(fileTranslationStatus.error){
+                if(isFileTranslationStatusError(fileTranslationStatus)){
                     console.log(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
                 }
                 else{
@@ -207,10 +221,7 @@ async function getPackTranslationStatus(language, pack){
  * @param {string} language 
  * @param {string} pack 
  * @param {string} packFilename 
- * @returns { Promise<
- *  {missingTranslations: MissingTranslation[], referenceCards: Card[], translationCards: Card[], packFilename: string}
- *  | {error: Error, referenceCards: Card[], packFilename: string}
- * >}
+ * @returns { Promise<FileTranslationStatus>}
  */
 async function getFileTranslationStatus(language, pack, packFilename){
     const referencePackDirectory = join(referencePacksDirectory, pack)
