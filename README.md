@@ -4,8 +4,9 @@ Tools to help translation of https://github.com/Kamalisk/arkhamdb-json-data
 
 ## Get translation status
 
-You need to set the `ARKHAM_DATA_ROOT` environment variable, for instance via a `.env` file (or via the command line)
+You need to have [nodejs installed](https://nodejs.org/fr/download) on your machine
 
+You need to set the `ARKHAM_DATA_ROOT` environment variable, for instance via a `.env` file (or via the command line)
 
 ```sh
 # For interactive version
