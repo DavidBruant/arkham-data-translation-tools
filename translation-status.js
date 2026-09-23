@@ -122,7 +122,7 @@ function getNumberMissingTranslationsInFile(fileTranslationStatus){
 
 
 if(pack){
-    console.info(`📖 Translation status for pack '${pack}' language '${language}'`)
+    console.info(styleText('bold', `📖 Translation status for pack '${pack}' language '${language}'`))
 
     const packTranslationStatus = await getPackTranslationStatus(language, pack)
 
@@ -145,7 +145,7 @@ if(pack){
             console.log('🗋 No card in the pack is translated. Take 1 horror.')
         }
         else{
-            console.log(`📜 Total - ${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated`)
+            console.log(styleText('bold', `📜 Total - ${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`))
 
             packTranslationStatus.sort((fileTS1, fileTS2) => {
                 // show errors first
