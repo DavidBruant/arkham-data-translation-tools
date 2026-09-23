@@ -1,8 +1,11 @@
 {
   "name": "arkham-data-translation-tools",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Tools to help translation of https://github.com/Kamalisk/arkhamdb-json-data",
-  "main": "index.js",
+  "bin": {
+    "translation-status": "./translation-status.js",
+    "translation-helper": "./translation-helper.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
