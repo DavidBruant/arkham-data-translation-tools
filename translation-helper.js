@@ -170,5 +170,5 @@ console.log('Translated text:', missingTranslation.translationCard[property])
 const suggestedTranslation = suggestFrenchTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property)
 
 if(suggestedTranslation){
-    console.log('Suggested translation:', suggestedTranslation)
+    console.log('Suggested translation:', JSON.stringify(suggestedTranslation))
 }
