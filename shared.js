@@ -129,7 +129,7 @@ export function findMissingTranslations(translationCard, referenceCard){
         const translationText = translationCard[prop];
 
         if(prop === 'traits'){
-            if(!similarFrenchTranslationTraits.has(translationText) && translationText === referenceText){
+            if(!similarFrenchTranslationTraits.has(translationText) && translationText === referenceText && referenceText && referenceText.length >= 1){
                 missingTranslations.push({
                     referenceCard,
                     translationCard,

@@ -52,10 +52,14 @@ const options = /** @type {const} */ ({
     pack: {
         type: 'string',
         short: 'p'
+    },
+    file: {
+        type: 'string',
+        short: 'f'
     }
 })
 
-let { values : {language, all, pack} } = parseArgs({ options });
+let { values : {language, all, pack, file} } = parseArgs({ options });
 
 if(!language){
     const languageOptions = await getLanguageList(arkhamDataRoot)
@@ -68,6 +72,9 @@ if(!language){
 
 if(all && pack){
     console.error(`You cannot choose both --all and --pack <pack>. You need to pick only one`)
+}
+if(all && file){
+    console.error(`You cannot choose both --all and --file <file>. You need to pick only one`)
 }
 
 if(!all && !pack){
@@ -83,9 +90,13 @@ const referencePacksDirectory = join(arkhamDataRoot, packsDir)
 
 
 if(pack){
-    showPackTranslationStatus(language, pack)
+    if(file){
+        showFileTranslationStatus(language, pack, file)
+    }
+    else{
+        showPackTranslationStatus(language, pack)
+    }
 }
-
 
 if(all){
     const packs = await getReferencePackList(arkhamDataRoot)
@@ -220,6 +231,46 @@ async function showPackTranslationStatus(language, pack){
 
 
 
+/**
+ * 
+ * @param {string} language 
+ * @param {string} pack 
+ * @param {string} file 
+ */
+async function showFileTranslationStatus(language, pack, file){
+    console.info(styleText(['bold', 'cyan'], `📖 Translation status for pack '${pack}' file '${file}' language '${language}'`))
+
+    const fileTranslationStatus = await getFileTranslationStatus(language, pack, file)
+    
+    if(isFileTranslationStatusError(fileTranslationStatus)){
+        console.log(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
+    }
+    else{
+        const numberOfTranslatableTexts = getNumberOfTranslatableTextsInFile(fileTranslationStatus)
+        const numberMissingTranslations = getNumberMissingTranslationsInFile(fileTranslationStatus)
+        const numberOfTranslatedTexts =  numberOfTranslatableTexts - numberMissingTranslations
+
+        if(numberOfTranslatedTexts === numberOfTranslatableTexts){
+            console.log('✅', styleText('bold', file))
+        }
+        else{
+            if(numberOfTranslatedTexts === 0){
+                console.log('🗋 ', styleText('bold', file), 'No card in the file is translated. Take 1 horror.')
+            }
+            else{
+                console.log(`📜 ${styleText('bold', file)} ${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)
+                const cardsMissingTranslationCodes = new Set(
+                    fileTranslationStatus.missingTranslations.map(({referenceCard}) => referenceCard.code)
+                )
+
+                console.log('Cards missing a translation:', [...cardsMissingTranslationCodes].join(' | '))
+            }
+        }
+    }
+
+    process.stdout.write('\n')
+}
+
 
 
 
@@ -339,63 +390,5 @@ if(all){
     console.log('PPP do overall translation status for the given language')
     process.exit()
 }
-
-
-
-/*
-        console.info(`Translation status for ${pack}/${packFilename} (${referenceCards.length} cards)`)
-
-        const numberOfTranlatableTexts = sum(referenceCards.map(card => {
-            let translatableItemsCount = 0;
-            for(const prop of translatableProperties){
-                if(card[prop] && card[prop].trim().length >= 1){
-                    translatableItemsCount++
-                }
-            }
-            return translatableItemsCount
-        }))
-
-        const numberOfMissingTranslations = missingTranslations.length
-        const numberOfTranslatedTexts = numberOfTranlatableTexts - numberOfMissingTranslations
-
-        console.info(
-            numberOfTranslatedTexts === numberOfTranlatableTexts ? '✅' :  (numberOfTranslatedTexts === 0 ? '🗋 ' : '🖋️ '),
-            `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`
-
-        )
-*/
-
-
-
-//for(const packDir of referencePackDirs){
-    
-
-        
-        /*
-        if(missingTranslations.length === 0){
-            console.info(`No missing ${languageDir} translations for ${packsDir}/${packDir}/${packFilename}`)
-        }
-        else{
-
-
-            for(const {referenceCard, translationCard, property} of missingTranslations){
-                console.log('Missing translation', packDir, packFilename, 'card', referenceCard.code, 'property', property)
-                console.log('Reference:', referenceCard[property])
-                console.log('Translation:',  translationCard[property])
-            }
-        }
-        */
-
-
-        
-
-    
-//}
-
-
-
-
-
-
 
 
