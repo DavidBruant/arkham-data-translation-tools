@@ -1,5 +1,7 @@
 //@ts-check
 
+/** @import {} from './types.ts' */
+
 import {join} from 'node:path'
 import {readFile, readdir, stat} from 'node:fs/promises'
 
