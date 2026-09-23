@@ -5,6 +5,8 @@
 import {join} from 'node:path'
 import {readFile, readdir} from 'node:fs/promises'
 
+import leven from 'leven';
+
 // directory conventions of https://github.com/Kamalisk/arkhamdb-json-data
 export const packsDir = 'pack'
 export const translationDir = 'translations'
@@ -128,54 +130,66 @@ export function findMissingTranslations(translationCard, referenceCard){
         const referenceText = referenceCard[prop];
         const translationText = translationCard[prop];
 
-        if(prop === 'traits'){
-            if(!similarFrenchTranslationTraits.has(translationText) && translationText === referenceText && referenceText && referenceText.length >= 1){
-                missingTranslations.push({
-                    referenceCard,
-                    translationCard,
-                    property: prop
-                })
-            }
-        }
-        else{
-            if(prop === 'name' || prop === 'back_name'){
-                if(
-                    referenceCard.type_code === 'investigator' || 
-                    (referenceCard.type_code === 'asset' && (referenceCard.traits?.includes('Ally.') || referenceCard.traits?.includes('Humanoid.') || referenceCard.traits?.includes('Bystander.')) && referenceCard.is_unique) || 
-                    (referenceCard.type_code === 'enemy' && referenceCard.is_unique)
-                ){
-                    // names of unique people/enemies aren't translated
-                }
-                else{
-                    if(translationText === referenceText && !similarFrenchTranslationNames.has(translationText)){
-                        missingTranslations.push({
-                            referenceCard,
-                            translationCard,
-                            property: prop
-                        })
-                    }
-                }
+        if(referenceText && referenceText.length >= 1){ // is there something to translate?
 
+            if(prop === 'traits'){
+                if(!similarFrenchTranslationTraits.has(translationText) && translationText === referenceText){
+                    missingTranslations.push({
+                        referenceCard,
+                        translationCard,
+                        property: prop
+                    })
+                }
             }
             else{
-                if(prop === 'flavor'){
-                    if(translationText === referenceText && !similarFrenchTranslationFlavor.has(translationText)){
-                        missingTranslations.push({
-                            referenceCard,
-                            translationCard,
-                            property: prop
-                        })
+                if(prop === 'name' || prop === 'back_name'){
+                    if(
+                        referenceCard.type_code === 'investigator' || 
+                        (referenceCard.type_code === 'asset' && (referenceCard.traits?.includes('Ally.') || referenceCard.traits?.includes('Humanoid.') || referenceCard.traits?.includes('Bystander.')) && referenceCard.is_unique) || 
+                        (referenceCard.type_code === 'enemy' && referenceCard.is_unique)
+                    ){
+                        // names of unique people/enemies aren't translated
                     }
-                }
-                else{
-                    // base case, if texts are different, they're a translation
-                    if(referenceText && translationText && translationText === referenceText){
-                        missingTranslations.push({
+                    else{
+                        if(translationText === referenceText && !similarFrenchTranslationNames.has(translationText)){
+                            missingTranslations.push({
                                 referenceCard,
                                 translationCard,
                                 property: prop
-                        })
+                            })
+                        }
+                    }
+
+                }
+                else{
+                    if(prop === 'flavor'){
+                        if(translationText === referenceText && !similarFrenchTranslationFlavor.has(translationText)){
+                            missingTranslations.push({
+                                referenceCard,
+                                translationCard,
+                                property: prop
+                            })
+                        }
+                    }
+                    else{
+                        // base case, if referenceText and translationText are very close, a translation is missing
+                        const maxDistance = referenceText.length*5/100
+                        const levDistance = leven(referenceText, translationText || '', {maxDistance});
                         
+                        const threshold = maxDistance-1
+
+                        if(translationText && levDistance < threshold){
+                            //console.log('referenceText', referenceText)
+                            //console.log('translationText', translationText)
+                            // console.log('maxDistance', maxDistance, 'levDistance', levDistance, 'threshold', threshold)
+
+                            missingTranslations.push({
+                                    referenceCard,
+                                    translationCard,
+                                    property: prop
+                            })
+                            
+                        }
                     }
                 }
             }
