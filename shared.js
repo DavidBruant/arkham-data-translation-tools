@@ -42,6 +42,11 @@ const similarFrenchTranslationTraits = new Set([
     'Assistant.'
 ])
 
+export const traitFrenchTranslation = new Map([
+    ['Humanoid', 'Humanoïde']
+])
+
+
 // name that are exactly the same in French as in English
 const similarFrenchTranslationNames = new Set([
     undefined,

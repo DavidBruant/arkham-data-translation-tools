@@ -2,6 +2,19 @@
 
 /** @import { translatableProperties } from './shared.js' */
 
+import {traitFrenchTranslation} from './shared.js'
+
+
+
+/**
+ * 
+ * @param {string} trait
+ */
+function translateTrait(trait){
+    return traitFrenchTranslation.get(trait) || trait
+}
+
+
 /**
  * 
  * @param {string} traits
@@ -14,48 +27,79 @@ function suggestFrenchTraitsTranslation(traits){
 
 
 const staticReplacements = new Map([
+    // generic words
     [' and ', ' et '],
     ['You must either', 'vous devez soit'],
-    ['clues', 'indices'],
-
-    ['<b>Forced</b>', '<b>Forcé</b>'],
-    
     ['above', 'au-dessus'],
     ['below', 'en-dessous'],
     ['to the right', 'à droite'],
     ['to the left', 'à gauche'],
-    
+    ['adjacent to', 'adjacent à'],
+    ['attached', 'attaché'],
+
+    // rules words
+    ['Discard', 'Défaussez'],
+    ['discard', 'défaussez'],
+    ['Then,', 'Ensuite,'],
+    ['copy', 'exemplaire'],
+    ['in play', 'en jeu'],
+    ['hand slot', 'emplacement de main'],
+    ['it gains surge', `elle gagne Renfort`],
+    ['shroud', 'valeur occulte'],
+
+    // Arkham LCG concepts
+    ['enemy', 'ennemi'],
+    ['clues', 'indices'],
+    ['<b>Forced</b>', '<b>Forcé</b>'],
+    ['<b>Spawn</b>', '<b>Génération</b>'],
+    ['<b>Revelation</b>', '<b>Révélation</b>'],
+    ['spawn', 'générez'],
+    ['<b>Parley.</b>', '<b>Discussion</b>'],
+    ['Hunter.', 'Chasseur.'],
+    ['Retaliate.', 'Riposte.'],
+    ['in your threat area', 'dans votre zone de menace'],
+
+    // location
     ['unrevealed locations', 'lieux non-révélés'],
     ['unrevealed location', 'lieu non-révélé'],
+    ['at any location', `dans n'importe quel lieu`],
+    ['at that location', `dans ce lieu`],
+    ['look at the revealed side', 'regardez la face révélée'],
+    ['Attach to your location', 'Attachez cette carte à votre lieu'],
+    ['Attached location gets', 'Le lieu attaché gagne'],
     
+    // moving
     ['cancel the effects of the move', 'annulez ce déplacement'],
 
+    // costs
     ['As an additional cost for you to', 'En tant que coût supplémentaire pour que vous puissiez'],
-
     ['must spend', 'doivent dépenser'],
     ['investigators at your location', 'les investigateurs dans votre lieu'],
     
+    // timing
     ['When you would move', 'Quand vous devriez vous déplacer'],
     ['After you end your turn at', 'Après avoir terminé votre tour dans'],
+    ['At the end of your turn', 'À la fin de votre tour'],
+    ['At the end of the round', 'À la fin du round'],
 
+    // Loosing things
     ['take 1 direct horror', 'subissez 1 horreur directe'],
     ['take 1 direct damage', 'subissez 1 dégât direct'],
     ['discard 2 random cards from your hand', 'défaussez 2 cartes prises au hasard dans votre main'],
     ['lose 5 resources', 'perdre 5 ressources'],
 
+    // Skill tests
     ['If you succeed', 'En cas de réussite'],
     ['If you fail', `En cas d'échec`],
+    ['For each point you fail by', 'Pour chaque point manquant'],
 
-    ['(Group limit once per game.)', `(Limite collective d'une fois par partie.)`],
+    // limits/max
+    ['Group limit once per game.', `Limite collective d'une fois par partie.`],
+    ['Limit 1 per investigator.', `Limite de 1 par investigateur.`],
 
-    ['look at the revealed side', 'regardez la face révélée'],
-    ['in play', 'en jeu'],
-    ['hand slot', 'emplacement de main'],
-
+    // random
     ['While you are investigating', 'Tant que vous enquêtez'],
-
     ['Catacombs deck', 'deck Catacombes'],
-    ['adjacent to', 'adjacent à'],
     ['Ignore the text', 'Ignorez le texte'],
     ['the skill indicated by the investigation attempt', `la compétence indiquée lors de la tentative d'enquête`],
 ])
@@ -121,7 +165,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Take (\d) damage)/
+        const regexp = /(Takes? (\d) damage)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -133,7 +177,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Take (\d) horror)/
+        const regexp = /(Takes? (\d) horror)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -154,6 +198,17 @@ const replacementFunctions = [
         else{
             return suggestedText
         }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const mustSpendAsAGroupRegExp = /(\[\[(\w+)\]\])/g
+        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+
+        for(const match of matches){
+            suggestedText = suggestedText.replace(match[1], `[[${translateTrait(match[2])}]]`)
+        }
+
+        return suggestedText
     },
 
     // @ts-ignore
@@ -183,6 +238,7 @@ function suggestFrenchTextTranslation(referenceCard, translationCard, property){
     let suggestedText = referenceText
     for(const replacementFunction of replacementFunctions){
         suggestedText = replacementFunction(suggestedText, referenceCard, translationCard)
+        //console.log('suggestedText', suggestedText)
     }
 
     for(const [englishPattern, frenchReplacement] of staticReplacements){
