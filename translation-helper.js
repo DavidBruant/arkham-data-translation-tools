@@ -1,7 +1,9 @@
+#!/usr/bin/env node
+
 //@ts-check
 
 import {join} from 'node:path'
-import {readFile, readdir, stat} from 'node:fs/promises'
+import {stat} from 'node:fs/promises'
 
 import minimist from 'minimist'
 

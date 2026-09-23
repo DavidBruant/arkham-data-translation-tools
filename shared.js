@@ -3,7 +3,7 @@
 /** @import {} from './types.ts' */
 
 import {join} from 'node:path'
-import {readFile, readdir, stat} from 'node:fs/promises'
+import {readFile, readdir} from 'node:fs/promises'
 
 // directory conventions of https://github.com/Kamalisk/arkhamdb-json-data
 export const packsDir = 'pack'
