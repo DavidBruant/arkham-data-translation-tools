@@ -103,39 +103,61 @@ const staticReplacements = new Map([
     ['it gains surge', `elle gagne Renfort`],
     ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
     ['encounter deck', 'deck Rencontre'],
+    ['encounter discard pile', 'pile de défausse Rencontre'],
     ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
     ['a skill test', 'un test de compétence'],
     ['in play', 'en jeu'],
     ['hand slot', 'emplacement de main'],
     ['upkeep phase', `phase d'entretien`],
+    ['the scenario reference card', 'la carte référence du scénario'],
+    ['Each investigator', 'Chaque investigateur'],
+    ['automatically evade', 'échappez automatiquement'],
+    ['on the current agenda', `sur l'intrigue en cours`],
 
     ['Discard', 'Défaussez'],
     ['discard', 'défaussez'],
     ['Then,', 'Ensuite,'],
-    ['copy', 'exemplaire'],
-    ['copies', 'exemplaires'],
     ['shroud', 'valeur occulte'],
     ['hidden', 'Cachée'],
     ['enemy', 'ennemi'],
-    ['clues', 'indices'],
+    ['clue', 'indice'],
+    ['Agenda', 'Intrigue'],
+    ['treachery', 'traitrise'],
+    ['asset', 'soutien'],
+    ['investigator', 'investigateur'],
+
     ['<b>Forced</b>', '<b>Forcé</b>'],
     ['<b>Spawn</b>', '<b>Génération</b>'],
     ['spawn', 'générez'],
+    ['Spawn', 'Générez'],
+    ['<b>Prey</b>', '<b>Proie</b>'],
     ['<b>Revelation</b>', '<b>Révélation</b>'],
     ['<b>Parley.</b>', '<b>Discussion</b>'],
     ['Hunter.', 'Chasseur.'],
     ['Retaliate.', 'Riposte.'],
+    ['health', 'vie'],
+    ['sanity', 'santé mentale'],
 
     // generic words
+    ['Flip this card', 'Retournez cette carte'],
     ['You must either', 'vous devez soit'],
     ['above', 'au-dessus'],
     ['below', 'en-dessous'],
     ['to the right', 'à droite'],
     ['to the left', 'à gauche'],
+    ['underneath', 'sous'],
     ['adjacent to', 'adjacent à'],
     ['attached', 'attaché'],
     ['she gains', 'elle gagne'],
+    ['replace it', 'remplacez-la'],
+    ['copy', 'exemplaire'],
+    ['copies', 'exemplaires'],
     [' and ', ' et '],
+    ['the fewest', 'le moins de'],
+    ['at least', 'au moins'],
+    ['with', 'avec'],
+    ['among', 'parmi'],
+    ['Shuffle', 'Mélangez'],
 
 ])
 
@@ -240,6 +262,34 @@ const replacementFunctions = [
             suggestedText = suggestedText.replace(
                 match[1], 
                 `Effectuez la mise en place comme indiqué dans le Guide de Campagne ${translateTrait(match[2])}`
+            )
+        }
+
+        return suggestedText
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const mustSpendAsAGroupRegExp = /(Remove (.*) from the game)/g
+        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+
+        for(const match of matches){
+            suggestedText = suggestedText.replace(
+                match[1], 
+                `Retirez de la partie ${match[2]}`
+            )
+        }
+
+        return suggestedText
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const mustSpendAsAGroupRegExp = /(Set (.*) aside, out of play)/g
+        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+
+        for(const match of matches){
+            suggestedText = suggestedText.replace(
+                match[1], 
+                `Mettez de côté ${match[2]}, hors jeu`
             )
         }
 

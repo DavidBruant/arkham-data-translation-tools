@@ -60,19 +60,19 @@ const property = argv.property;
 let {card} = argv
 
 if(!language){
-    console.log(`Choose a language with '--language <language>'`)
+    console.info(`Choose a language with '--language <language>'`)
     
     const languageDirs = await getLanguageList(arkhamDataRoot)
-    console.log('Choices: ', languageDirs.join(' | '))
+    console.info('Choices: ', languageDirs.join(' | '))
 
     process.exit()
 }
 
 if(!pack){
-    console.log(`Choose a pack with '--pack <pack>'`)
+    console.info(`Choose a pack with '--pack <pack>'`)
     
     const referencePackDirs = await getReferencePackList(arkhamDataRoot)
-    console.log('Choices: ', referencePackDirs.join(' | '))
+    console.info('Choices: ', referencePackDirs.join(' | '))
 
     process.exit()
 }
@@ -96,10 +96,10 @@ catch(e){
 
 
 if(!file){
-    console.log(`Choose a file with '--file <file>'`)
+    console.info(`Choose a file with '--file <file>'`)
     
     const packFiles = await getPackFileList(arkhamDataRoot, pack)
-    console.log('Choices: ', packFiles.join(' | '))
+    console.info('Choices: ', packFiles.join(' | '))
 
     process.exit()
 }
@@ -123,13 +123,13 @@ catch(e){
 
 
 if(!card){
-    console.log(`Choose an untranslated card with '--card <card>'`)
+    console.info(`Choose an untranslated card with '--card <card>'`)
     
     const missingTranslations = await getUntranslatedCardsList(arkhamDataRoot, pack, file, language)
 
     const missingTranslationCodes = new Set(missingTranslations.map(({referenceCard}) => referenceCard.code))
 
-    console.log('Choices: ', [...missingTranslationCodes].join(' | '))
+    console.info('Choices: ', [...missingTranslationCodes].join(' | '))
 
     process.exit()
 }
@@ -149,27 +149,28 @@ if(typeof card === 'number'){
 const missingTranslations = await getCardMissingTranslationsList(arkhamDataRoot, pack, file, card, language)
 
 if(!property){
-    console.log(`Choose a property to translate with '--property <property>'`)
+    console.info(`Choose a property to translate with '--property <property>'`)
     
     const missingTranslationProperties = missingTranslations.map(({property}) => property);
 
-    console.log('Choices: ', [...missingTranslationProperties].join(' | '))
+    console.info('Choices: ', [...missingTranslationProperties].join(' | '))
 
     process.exit()
 }
 
-console.info('Transation of card', language, pack, file, card, property)
 const missingTranslation = missingTranslations.find(({property: prop}) => property === prop)
 
 if(!missingTranslation){
     throw new TypeError(`No missing translation for card ${card}, property '${property}'`)
 }
 
-console.log(styleText(['bold', 'green'], 'Original text:\n'), missingTranslation.referenceCard[property])
-console.log(styleText(['bold', 'green'], 'Translated text:\n'), missingTranslation.translationCard[property])
+console.info('Transation of card', language, pack, file, card, property)
+
+console.info(styleText(['bold', 'green'], 'Original text:\n'), missingTranslation.referenceCard[property])
+console.info(styleText(['bold', 'green'], 'Translated text:\n'), missingTranslation.translationCard[property])
 
 const suggestedTranslation = suggestFrenchTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property)
 
 if(suggestedTranslation){
-    console.log(styleText(['bold', 'blue'], 'Suggested translation:\n'), JSON.stringify(suggestedTranslation))
+    console.info(styleText(['bold', 'blue'], 'Suggested translation:\n'), JSON.stringify(suggestedTranslation))
 }

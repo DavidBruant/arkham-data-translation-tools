@@ -46,7 +46,8 @@ const similarFrenchTranslationTraits = new Set([
 ])
 
 export const traitFrenchTranslation = new Map([
-    ['Humanoid', 'Humanoïde']
+    ['Humanoid', 'Humanoïde'],
+    ['Bystander', 'Passant'],
 ])
 
 
@@ -130,6 +131,7 @@ export function getPackFileList(arkhamDataRootDir, pack){
  * @returns {MissingTranslation[]}
  */
 export function findMissingTranslations(translationCard, referenceCard){
+    //console.log('findMissingTranslations', translationCard, referenceCard)
 
     /** @type {ReturnType<findMissingTranslations>} */
     const missingTranslations = []
@@ -183,20 +185,20 @@ export function findMissingTranslations(translationCard, referenceCard){
                         // base case, if referenceText and translationText are very close, a translation is missing
                         const maxDistance = referenceText.length*5/100
                         const levDistance = leven(referenceText, translationText || '', {maxDistance});
+                        //const levDistance = leven(referenceText, translationText || '');
                         
                         const threshold = maxDistance-1
 
-                        if(translationText && levDistance < threshold){
-                            //console.log('referenceText', referenceText)
-                            //console.log('translationText', translationText)
-                            // console.log('maxDistance', maxDistance, 'levDistance', levDistance, 'threshold', threshold)
+                        //console.log('referenceText', referenceText)
+                        //console.log('translationText', translationText)
+                        //console.log('maxDistance', maxDistance, 'levDistance', levDistance, 'threshold', threshold)
 
+                        if(translationText && levDistance < threshold){
                             missingTranslations.push({
                                     referenceCard,
                                     translationCard,
                                     property: prop
                             })
-                            
                         }
                     }
                 }
