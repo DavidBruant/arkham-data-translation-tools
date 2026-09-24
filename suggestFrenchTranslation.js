@@ -33,7 +33,6 @@ const staticReplacements = new Map([
         `mélangez la pile de défausse Rencontre dans le deck Rencontre.`
     ],
     
-    
     // moving
     ['cancel the effects of the move', 'annulez ce déplacement'],
 
@@ -49,7 +48,7 @@ const staticReplacements = new Map([
     ['At the end of the round', 'À la fin du round'],
     [`When you reveal`, 'Quand vous révélez'],
     [`After you reveal`, 'Après avoir révélé'],
-
+    ['After you defeat', 'Après avoir vaincu'],
 
     // Loosing things
     ['take 1 direct horror', 'subissez 1 horreur directe'],
@@ -60,7 +59,10 @@ const staticReplacements = new Map([
     // Skill tests
     ['If you succeed', 'En cas de réussite'],
     ['If you fail', `En cas d'échec`],
+    ['After you fail', `Après avoir échoué`],
     ['For each point you fail by', 'Pour chaque point manquant'],
+    ['for each horror on you', 'pour chaque horreur sur vous'],
+    ['for each damage on you', 'pour chaque dégât sur vous'],
 
     // limits/max
     ['Group limit once per game.', `Limite collective d'une fois par partie.`],
@@ -94,34 +96,37 @@ const staticReplacements = new Map([
     ['Attach to your location', 'Attachez cette carte à votre lieu'],
     ['Attached location gets', 'Le lieu attaché gagne'],
 
-    // rules words
+    // Arkham LCG concepts / rule words
+    ['the victory display', 'la pile de victoire'],
+    ['Attach this card to', 'Attachez cette carte à'],
+    ['in your threat area', 'dans votre zone de menace'],
+    ['it gains surge', `elle gagne Renfort`],
+    ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
+    ['encounter deck', 'deck Rencontre'],
+    ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
+    ['a skill test', 'un test de compétence'],
+    ['in play', 'en jeu'],
+    ['hand slot', 'emplacement de main'],
+    ['upkeep phase', `phase d'entretien`],
+
     ['Discard', 'Défaussez'],
     ['discard', 'défaussez'],
     ['Then,', 'Ensuite,'],
     ['copy', 'exemplaire'],
     ['copies', 'exemplaires'],
-    ['in play', 'en jeu'],
-    ['hand slot', 'emplacement de main'],
-    ['it gains surge', `elle gagne Renfort`],
     ['shroud', 'valeur occulte'],
-    ['the victory display', 'la pile de victoire'],
-    ['Attach this card to', 'Attachez cette carte à'],
     ['hidden', 'Cachée'],
-
-    // Arkham LCG concepts
     ['enemy', 'ennemi'],
     ['clues', 'indices'],
     ['<b>Forced</b>', '<b>Forcé</b>'],
     ['<b>Spawn</b>', '<b>Génération</b>'],
-    ['<b>Revelation</b>', '<b>Révélation</b>'],
     ['spawn', 'générez'],
+    ['<b>Revelation</b>', '<b>Révélation</b>'],
     ['<b>Parley.</b>', '<b>Discussion</b>'],
     ['Hunter.', 'Chasseur.'],
     ['Retaliate.', 'Riposte.'],
-    ['in your threat area', 'dans votre zone de menace'],
 
     // generic words
-    [' and ', ' et '],
     ['You must either', 'vous devez soit'],
     ['above', 'au-dessus'],
     ['below', 'en-dessous'],
@@ -129,6 +134,8 @@ const staticReplacements = new Map([
     ['to the left', 'à gauche'],
     ['adjacent to', 'adjacent à'],
     ['attached', 'attaché'],
+    ['she gains', 'elle gagne'],
+    [' and ', ' et '],
 
 ])
 
