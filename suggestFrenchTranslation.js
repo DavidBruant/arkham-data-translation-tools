@@ -27,46 +27,12 @@ function suggestFrenchTraitsTranslation(traits){
 
 
 const staticReplacements = new Map([
-    // generic words
-    [' and ', ' et '],
-    ['You must either', 'vous devez soit'],
-    ['above', 'au-dessus'],
-    ['below', 'en-dessous'],
-    ['to the right', 'à droite'],
-    ['to the left', 'à gauche'],
-    ['adjacent to', 'adjacent à'],
-    ['attached', 'attaché'],
 
-    // rules words
-    ['Discard', 'Défaussez'],
-    ['discard', 'défaussez'],
-    ['Then,', 'Ensuite,'],
-    ['copy', 'exemplaire'],
-    ['in play', 'en jeu'],
-    ['hand slot', 'emplacement de main'],
-    ['it gains surge', `elle gagne Renfort`],
-    ['shroud', 'valeur occulte'],
-
-    // Arkham LCG concepts
-    ['enemy', 'ennemi'],
-    ['clues', 'indices'],
-    ['<b>Forced</b>', '<b>Forcé</b>'],
-    ['<b>Spawn</b>', '<b>Génération</b>'],
-    ['<b>Revelation</b>', '<b>Révélation</b>'],
-    ['spawn', 'générez'],
-    ['<b>Parley.</b>', '<b>Discussion</b>'],
-    ['Hunter.', 'Chasseur.'],
-    ['Retaliate.', 'Riposte.'],
-    ['in your threat area', 'dans votre zone de menace'],
-
-    // location
-    ['unrevealed locations', 'lieux non-révélés'],
-    ['unrevealed location', 'lieu non-révélé'],
-    ['at any location', `dans n'importe quel lieu`],
-    ['at that location', `dans ce lieu`],
-    ['look at the revealed side', 'regardez la face révélée'],
-    ['Attach to your location', 'Attachez cette carte à votre lieu'],
-    ['Attached location gets', 'Le lieu attaché gagne'],
+    [
+        `Shuffle the encounter discard pile into the encounter deck.`, 
+        `mélangez la pile de défausse Rencontre dans le deck Rencontre.`
+    ],
+    
     
     // moving
     ['cancel the effects of the move', 'annulez ce déplacement'],
@@ -81,6 +47,9 @@ const staticReplacements = new Map([
     ['After you end your turn at', 'Après avoir terminé votre tour dans'],
     ['At the end of your turn', 'À la fin de votre tour'],
     ['At the end of the round', 'À la fin du round'],
+    [`When you reveal`, 'Quand vous révélez'],
+    [`After you reveal`, 'Après avoir révélé'],
+
 
     // Loosing things
     ['take 1 direct horror', 'subissez 1 horreur directe'],
@@ -97,11 +66,70 @@ const staticReplacements = new Map([
     ['Group limit once per game.', `Limite collective d'une fois par partie.`],
     ['Limit 1 per investigator.', `Limite de 1 par investigateur.`],
 
+    // Campaign-specific
+    ['The Path to Carcosa', 'La Route de Carcosa'],
+
+    // return
+    ['with the following exceptions:', 'en tenant compte des exceptions suivantes\u00A0:'],
+    [
+        'When gathering encounter sets, also gather the new encounter sets for', 
+        'Quand vous réunissez les sets de rencontre, réunissez également les nouveaux sets de rencontre pour'
+    ],
+    ['shown here.', 'indiqués ci-dessous\u00A0:'],
+    [`Construct the act deck`, `Constituez le deck Acte`],
+    ['(Continued on reverse side.)', '(Suite au verso.)'],
+
     // random
     ['While you are investigating', 'Tant que vous enquêtez'],
     ['Catacombs deck', 'deck Catacombes'],
     ['Ignore the text', 'Ignorez le texte'],
     ['the skill indicated by the investigation attempt', `la compétence indiquée lors de la tentative d'enquête`],
+
+    // location
+    ['unrevealed locations', 'lieux non-révélés'],
+    ['unrevealed location', 'lieu non-révélé'],
+    ['at any location', `dans n'importe quel lieu`],
+    ['at that location', `dans ce lieu`],
+    ['look at the revealed side', 'regardez la face révélée'],
+    ['Attach to your location', 'Attachez cette carte à votre lieu'],
+    ['Attached location gets', 'Le lieu attaché gagne'],
+
+    // rules words
+    ['Discard', 'Défaussez'],
+    ['discard', 'défaussez'],
+    ['Then,', 'Ensuite,'],
+    ['copy', 'exemplaire'],
+    ['copies', 'exemplaires'],
+    ['in play', 'en jeu'],
+    ['hand slot', 'emplacement de main'],
+    ['it gains surge', `elle gagne Renfort`],
+    ['shroud', 'valeur occulte'],
+    ['the victory display', 'la pile de victoire'],
+    ['Attach this card to', 'Attachez cette carte à'],
+    ['hidden', 'Cachée'],
+
+    // Arkham LCG concepts
+    ['enemy', 'ennemi'],
+    ['clues', 'indices'],
+    ['<b>Forced</b>', '<b>Forcé</b>'],
+    ['<b>Spawn</b>', '<b>Génération</b>'],
+    ['<b>Revelation</b>', '<b>Révélation</b>'],
+    ['spawn', 'générez'],
+    ['<b>Parley.</b>', '<b>Discussion</b>'],
+    ['Hunter.', 'Chasseur.'],
+    ['Retaliate.', 'Riposte.'],
+    ['in your threat area', 'dans votre zone de menace'],
+
+    // generic words
+    [' and ', ' et '],
+    ['You must either', 'vous devez soit'],
+    ['above', 'au-dessus'],
+    ['below', 'en-dessous'],
+    ['to the right', 'à droite'],
+    ['to the left', 'à gauche'],
+    ['adjacent to', 'adjacent à'],
+    ['attached', 'attaché'],
+
 ])
 
 // must spend 1[per_investigator] clues, as a group.
@@ -116,20 +144,6 @@ const replacementFunctions = [
         
         const patternToLookForWithBackName = pattern.replace('<name>', referenceCard.back_name)
         const toReplaceWithBackName = `Quand ${translationCard.back_name} est révélé`;
-
-        return suggestedText
-            .replaceAll(patternToLookForWithName, toReplaceWithName)
-            .replaceAll(patternToLookForWithBackName, toReplaceWithBackName)
-    },
-    // @ts-ignore
-    (suggestedText, referenceCard, translationCard) => {
-        const pattern = 'When you reveal <name>'
-        
-        const patternToLookForWithName = pattern.replace('<name>', referenceCard.name)
-        const toReplaceWithName = `Quand vous révélez ${translationCard.name}`;
-        
-        const patternToLookForWithBackName = pattern.replace('<name>', referenceCard.back_name)
-        const toReplaceWithBackName = `Quand vous révélez ${translationCard.back_name}`;
 
         return suggestedText
             .replaceAll(patternToLookForWithName, toReplaceWithName)
@@ -206,6 +220,20 @@ const replacementFunctions = [
 
         for(const match of matches){
             suggestedText = suggestedText.replace(match[1], `[[${translateTrait(match[2])}]]`)
+        }
+
+        return suggestedText
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const mustSpendAsAGroupRegExp = /(Perform the setup as indicated in (.*) Campaign Guide)/g
+        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+
+        for(const match of matches){
+            suggestedText = suggestedText.replace(
+                match[1], 
+                `Effectuez la mise en place comme indiqué dans le Guide de Campagne ${translateTrait(match[2])}`
+            )
         }
 
         return suggestedText

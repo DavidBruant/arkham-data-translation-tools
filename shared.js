@@ -12,8 +12,6 @@ export const packsDir = 'pack'
 export const translationDir = 'translations'
 
 
-
-
 /** @type {TranslatableProperty[]} */
 export const translatableProperties = ['name', 'traits', 'text', 'flavor', 'back_name', 'back_flavor', 'back_text'];
 
@@ -39,7 +37,12 @@ const similarFrenchTranslationTraits = new Set([
 
     // ptc
     'Paris.',
-    'Assistant.'
+    'Assistant.',
+
+    
+    // tcu
+    'Tarot.'
+
 ])
 
 export const traitFrenchTranslation = new Map([

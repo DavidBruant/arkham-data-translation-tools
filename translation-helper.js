@@ -2,6 +2,7 @@
 
 //@ts-check
 
+import { styleText } from 'node:util'
 import {join} from 'node:path'
 import {stat} from 'node:fs/promises'
 
@@ -164,11 +165,11 @@ if(!missingTranslation){
     throw new TypeError(`No missing translation for card ${card}, property '${property}'`)
 }
 
-console.log('Original text:', missingTranslation.referenceCard[property])
-console.log('Translated text:', missingTranslation.translationCard[property])
+console.log(styleText(['bold', 'green'], 'Original text:\n'), missingTranslation.referenceCard[property])
+console.log(styleText(['bold', 'green'], 'Translated text:\n'), missingTranslation.translationCard[property])
 
 const suggestedTranslation = suggestFrenchTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property)
 
 if(suggestedTranslation){
-    console.log('Suggested translation:', JSON.stringify(suggestedTranslation))
+    console.log(styleText(['bold', 'blue'], 'Suggested translation:\n'), JSON.stringify(suggestedTranslation))
 }
