@@ -57,6 +57,7 @@ const staticReplacements = new Map([
     ['lose 5 resources', 'perdre 5 ressources'],
 
     // Skill tests
+    ['is revealed during this test', 'est révélé lors de ce test'],
     ['If you succeed', 'En cas de réussite'],
     ['If you fail', `En cas d'échec`],
     ['After you fail', `Après avoir échoué`],
@@ -95,6 +96,7 @@ const staticReplacements = new Map([
     ['look at the revealed side', 'regardez la face révélée'],
     ['Attach to your location', 'Attachez cette carte à votre lieu'],
     ['Attached location gets', 'Le lieu attaché gagne'],
+    ['When you investigate this location', 'Quand vous enquêtez dans ce lieu'],
 
     // Arkham LCG concepts / rule words
     ['the victory display', 'la pile de victoire'],
@@ -102,6 +104,7 @@ const staticReplacements = new Map([
     ['in your threat area', 'dans votre zone de menace'],
     ['it gains surge', `elle gagne Renfort`],
     ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
+    ['from the top of the encounter deck', 'du dessus du deck Rencontre'],
     ['encounter deck', 'deck Rencontre'],
     ['encounter discard pile', 'pile de défausse Rencontre'],
     ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
@@ -109,10 +112,15 @@ const staticReplacements = new Map([
     ['in play', 'en jeu'],
     ['hand slot', 'emplacement de main'],
     ['upkeep phase', `phase d'entretien`],
+    ['enemy phase', `phase des Ennemis`],
     ['the scenario reference card', 'la carte référence du scénario'],
     ['Each investigator', 'Chaque investigateur'],
     ['automatically evade', 'échappez automatiquement'],
     ['on the current agenda', `sur l'intrigue en cours`],
+    ['at this location', 'dans ce lieu'],
+    ['this location', 'ce lieu'],
+    ['farthest from you', 'le plus éloigné de vous'],
+    ['After you discover', 'Après avoir découvert'],
 
     ['Discard', 'Défaussez'],
     ['discard', 'défaussez'],
@@ -125,6 +133,7 @@ const staticReplacements = new Map([
     ['treachery', 'traitrise'],
     ['asset', 'soutien'],
     ['investigator', 'investigateur'],
+    ['location', 'lieu'],
 
     ['<b>Forced</b>', '<b>Forcé</b>'],
     ['<b>Spawn</b>', '<b>Génération</b>'],
@@ -133,6 +142,7 @@ const staticReplacements = new Map([
     ['<b>Prey</b>', '<b>Proie</b>'],
     ['<b>Revelation</b>', '<b>Révélation</b>'],
     ['<b>Parley.</b>', '<b>Discussion</b>'],
+    ['gains hunter', 'gagne Chasseur'],
     ['Hunter.', 'Chasseur.'],
     ['Retaliate.', 'Riposte.'],
     ['health', 'vie'],
@@ -140,11 +150,14 @@ const staticReplacements = new Map([
 
     // generic words
     ['Flip this card', 'Retournez cette carte'],
+    ['its revealed side', 'sa face révélée'],
     ['You must either', 'vous devez soit'],
+    ['At the end of', 'À la fin de'],
     ['above', 'au-dessus'],
     ['below', 'en-dessous'],
     ['to the right', 'à droite'],
     ['to the left', 'à gauche'],
+    ['farthest', 'le plus éloigné'],
     ['underneath', 'sous'],
     ['adjacent to', 'adjacent à'],
     ['attached', 'attaché'],
@@ -154,9 +167,10 @@ const staticReplacements = new Map([
     ['copies', 'exemplaires'],
     [' and ', ' et '],
     ['the fewest', 'le moins de'],
+    ['1 or more', 'au moins 1'],
     ['at least', 'au moins'],
-    ['with', 'avec'],
-    ['among', 'parmi'],
+    [' with ', ' avec '],
+    [' among ', ' parmi '],
     ['Shuffle', 'Mélangez'],
 
 ])
@@ -290,6 +304,34 @@ const replacementFunctions = [
             suggestedText = suggestedText.replace(
                 match[1], 
                 `Mettez de côté ${match[2]}, hors jeu`
+            )
+        }
+
+        return suggestedText
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const mustSpendAsAGroupRegExp = /(put (.*) into play)/g
+        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+
+        for(const match of matches){
+            suggestedText = suggestedText.replace(
+                match[1], 
+                `mettez en jeu ${match[2]}`
+            )
+        }
+
+        return suggestedText
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const mustSpendAsAGroupRegExp = /(empty (.*)location)/g
+        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+
+        for(const match of matches){
+            suggestedText = suggestedText.replace(
+                match[1], 
+                `lieu ${match[2]}vide`
             )
         }
 

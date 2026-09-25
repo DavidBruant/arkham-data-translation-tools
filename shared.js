@@ -48,6 +48,7 @@ const similarFrenchTranslationTraits = new Set([
 export const traitFrenchTranslation = new Map([
     ['Humanoid', 'Humanoïde'],
     ['Bystander', 'Passant'],
+    ['Cultist', 'Cultiste'],
 ])
 
 
@@ -155,7 +156,7 @@ export function findMissingTranslations(translationCard, referenceCard){
                 if(prop === 'name' || prop === 'back_name'){
                     if(
                         referenceCard.type_code === 'investigator' || 
-                        (referenceCard.type_code === 'asset' && (referenceCard.traits?.includes('Ally.') || referenceCard.traits?.includes('Humanoid.') || referenceCard.traits?.includes('Bystander.')) && referenceCard.is_unique) || 
+                        (referenceCard.type_code === 'asset' && (referenceCard.traits?.includes('Ally.') || referenceCard.traits?.includes('Humanoid.') || referenceCard.traits?.includes('Bystander.') || referenceCard.traits?.includes('Cultist.')) && referenceCard.is_unique) || 
                         (referenceCard.type_code === 'enemy' && referenceCard.is_unique)
                     ){
                         // names of unique people/enemies aren't translated

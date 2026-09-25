@@ -385,12 +385,3 @@ async function getFileTranslationStatus(language, pack, packFilename){
 }
 
 
-
-if(all){
-    const referencePackDirs = await getReferencePackList(arkhamDataRoot)
-
-    console.log('PPP do overall translation status for the given language')
-    process.exit()
-}
-
-
