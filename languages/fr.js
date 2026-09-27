@@ -24,6 +24,7 @@ export const sameTranslationTraits = new Set([
     
     // investigators
     'Clairvoyant',
+    'Profession',
 
     // dwl
     'Dunwich',
@@ -60,10 +61,18 @@ export const sameTranslationNames = new Set([
     'Prestidigitation',
     'French Hill',
     'Acolyte',
+    'Perception',
+
+    // investigator
+    'Arrogance',
+    'Mauser C96',
+    'Beretta M1918',
+    'Clairvoyance',
+    'Becky',
+    'Déjà Vu',
 
     // dwl
     'La Bella Luna',
-    //'Peter Clover',
     'Thrall',
     'Adaptable',
     'Springfield M1903',
@@ -90,11 +99,13 @@ export const sameTranslationNames = new Set([
     'Corrosion',
     'Mano a Mano'
 
+
 ])
 
 // flavor texts that are exactly the same in French as in English
 export const sameTranslationFlavor = new Set([
-    'Negotium perambulans in tenebris...'
+    'Negotium perambulans in tenebris...',
+    'Ding, ding, ding!',
 ])
 
 
