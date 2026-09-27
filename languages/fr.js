@@ -1,29 +1,96 @@
 //@ts-check
 
-/** @import { translatableProperties } from './shared.js' */
-
-import {traitFrenchTranslation} from './shared.js'
+/** @import { translatableProperties } from '../shared.js' */
 
 
+// traits that are exactly the same in French as in English
+export const sameTranslationTraits = new Set([
+    undefined,
+    // core
+    'Miskatonic.',
+    'Miskatonic. Central.',
+    'Mutation.',
+    'Arkham.',
+    'Arkham. Central.',
+    'Talent.',
+    'Talent. Science.',
+    'Obstacle.', 
+    
+    // investigators
+    'Clairvoyant.',
 
-/**
- * 
- * @param {string} trait
- */
-function translateTrait(trait){
-    return traitFrenchTranslation.get(trait) || trait
-}
+    // dwl
+    'Dunwich. Central.',
+    'Dunwich.',
+    'Reporter.',
+    'Train.',
+
+    // ptc
+    'Paris.',
+    'Assistant.',
+
+    
+    // tcu
+    'Tarot.'
+
+])
+
+const traitTranslation = new Map([
+    ['Humanoid', 'Humanoïde'],
+    ['Bystander', 'Passant'],
+    ['Cultist', 'Cultiste'],
+])
 
 
-/**
- * 
- * @param {string} traits
- */
-function suggestFrenchTraitsTranslation(traits){
-    console.warn(`No good trait translation for now. It'll come soon.`)
-    return traits
+// name that are exactly the same in French as in English
+export const sameTranslationNames = new Set([
+    undefined,
+    // core
+    'Barricade',
+    'Endurance', 
+    'M1911',
+    'Prestidigitation',
+    'French Hill',
+    'Acolyte',
 
-}
+    // dwl
+    'La Bella Luna',
+    //'Peter Clover',
+    'Thrall',
+    'Adaptable',
+    'Springfield M1903',
+    
+    // ptc
+    'Recharge',
+    'St. Barnabé', 
+    'Montparnasse', 
+    'Montmartre',
+    'Opéra Garnier', 
+    "Gare d'Orsay",
+    'Canal Saint-Martin', 
+    'Le Marais',
+    'Notre-Dame', 
+    'Suggestion',
+    "Porte de l'Avancée", 
+    'Chœur Gothique',
+    'Lupara',
+    'Fin', 
+    'Possession',
+    'Sophie',
+    'Improvisation',
+    'Poltergeist',
+    'Corrosion',
+    'Mano a Mano'
+
+])
+
+// flavor texts that are exactly the same in French as in English
+export const sameTranslationFlavor = new Set([
+    undefined,
+    'Negotium perambulans in tenebris...'
+])
+
+
 
 
 const staticReplacements = new Map([
@@ -347,6 +414,25 @@ const replacementFunctions = [
     },
 ]
 
+/**
+ * 
+ * @param {string} trait
+ */
+function translateTrait(trait){
+    return traitTranslation.get(trait) || trait
+}
+
+
+/**
+ * 
+ * @param {string} traits
+ */
+function suggestFrenchTraitsTranslation(traits){
+    console.warn(`No good trait translation for now. It'll come soon.`)
+    return traits
+
+}
+
 
 
 /**
@@ -382,7 +468,7 @@ function suggestFrenchTextTranslation(referenceCard, translationCard, property){
  * @param {Card} translationCard 
  * @param {translatableProperties[number]} property 
  */
-export function suggestFrenchTranslation(referenceCard, translationCard, property){
+export function suggestTranslation(referenceCard, translationCard, property){
     if(property === 'name' || property === 'back_name' || property === 'flavor' || property === 'back_flavor'){
         return undefined
     }

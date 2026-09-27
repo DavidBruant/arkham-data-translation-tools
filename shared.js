@@ -7,6 +7,8 @@ import {readFile, readdir} from 'node:fs/promises'
 
 import leven from 'leven';
 
+import {sameTranslationFlavor, sameTranslationNames, sameTranslationTraits} from './languages/fr.js'
+
 // directory conventions of https://github.com/Kamalisk/arkhamdb-json-data
 export const packsDir = 'pack'
 export const translationDir = 'translations'
@@ -14,91 +16,6 @@ export const translationDir = 'translations'
 
 /** @type {TranslatableProperty[]} */
 export const translatableProperties = ['name', 'traits', 'text', 'flavor', 'back_name', 'back_flavor', 'back_text'];
-
-
-// traits that are exactly the same in French as in English
-const similarFrenchTranslationTraits = new Set([
-    undefined,
-    // core
-    'Miskatonic.',
-    'Miskatonic. Central.',
-    'Mutation.',
-    'Arkham.',
-    'Arkham. Central.',
-    'Talent.',
-    'Talent. Science.',
-    'Obstacle.', 
-    
-    // dwl
-    'Dunwich. Central.',
-    'Dunwich.',
-    'Reporter.',
-    'Train.',
-
-    // ptc
-    'Paris.',
-    'Assistant.',
-
-    
-    // tcu
-    'Tarot.'
-
-])
-
-export const traitFrenchTranslation = new Map([
-    ['Humanoid', 'Humanoïde'],
-    ['Bystander', 'Passant'],
-    ['Cultist', 'Cultiste'],
-])
-
-
-// name that are exactly the same in French as in English
-const similarFrenchTranslationNames = new Set([
-    undefined,
-    // core
-    'Barricade',
-    'Endurance', 
-    'M1911',
-    'Prestidigitation',
-    'French Hill',
-    'Acolyte',
-
-    // dwl
-    'La Bella Luna',
-    //'Peter Clover',
-    'Thrall',
-    'Adaptable',
-    'Springfield M1903',
-    
-    // ptc
-    'Recharge',
-    'St. Barnabé', 
-    'Montparnasse', 
-    'Montmartre',
-    'Opéra Garnier', 
-    "Gare d'Orsay",
-    'Canal Saint-Martin', 
-    'Le Marais',
-    'Notre-Dame', 
-    'Suggestion',
-    "Porte de l'Avancée", 
-    'Chœur Gothique',
-    'Lupara',
-    'Fin', 
-    'Possession',
-    'Sophie',
-    'Improvisation',
-    'Poltergeist',
-    'Corrosion',
-    'Mano a Mano'
-
-])
-
-// flavor texts that are exactly the same in French as in English
-const similarFrenchTranslationFlavor = new Set([
-    undefined,
-    'Negotium perambulans in tenebris...'
-])
 
 
 
@@ -144,7 +61,7 @@ export function findMissingTranslations(translationCard, referenceCard){
         if(referenceText && referenceText.length >= 1){ // is there something to translate?
 
             if(prop === 'traits'){
-                if(!similarFrenchTranslationTraits.has(translationText) && translationText === referenceText){
+                if(!sameTranslationTraits.has(translationText) && translationText === referenceText){
                     missingTranslations.push({
                         referenceCard,
                         translationCard,
@@ -162,7 +79,7 @@ export function findMissingTranslations(translationCard, referenceCard){
                         // names of unique people/enemies aren't translated
                     }
                     else{
-                        if(translationText === referenceText && !similarFrenchTranslationNames.has(translationText)){
+                        if(translationText === referenceText && !sameTranslationNames.has(translationText)){
                             missingTranslations.push({
                                 referenceCard,
                                 translationCard,
@@ -174,7 +91,7 @@ export function findMissingTranslations(translationCard, referenceCard){
                 }
                 else{
                     if(prop === 'flavor'){
-                        if(translationText === referenceText && !similarFrenchTranslationFlavor.has(translationText)){
+                        if(translationText === referenceText && !sameTranslationFlavor.has(translationText)){
                             missingTranslations.push({
                                 referenceCard,
                                 translationCard,
