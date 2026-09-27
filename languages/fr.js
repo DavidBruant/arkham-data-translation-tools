@@ -55,6 +55,8 @@ const traitTranslation = new Map([
     ['Humanoid', 'Humanoïde'],
     ['Bystander', 'Passant'],
     ['Cultist', 'Cultiste'],
+    ['Ally', 'Allié'],
+    ['Criminal', 'Criminel']
 ])
 
 
@@ -150,7 +152,6 @@ const staticReplacements = new Map([
     ['take 1 direct horror', 'subissez 1 horreur directe'],
     ['take 1 direct damage', 'subissez 1 dégât direct'],
     ['discard 2 random cards from your hand', 'défaussez 2 cartes prises au hasard dans votre main'],
-    ['lose 5 resources', 'perdre 5 ressources'],
 
     // Skill tests
     ['is revealed during this test', 'est révélé lors de ce test'],
@@ -164,9 +165,11 @@ const staticReplacements = new Map([
     // limits/max
     ['Group limit once per game.', `Limite collective d'une fois par partie.`],
     ['Limit 1 per investigator.', `Limite de 1 par investigateur.`],
+    ['Limit once per round', `Limite d'une fois par round`],
 
     // Campaign-specific
     ['The Path to Carcosa', 'La Route de Carcosa'],
+    ['The Dunwich Legacy', `L'Héritage de Dunwich`],
 
     // return
     ['with the following exceptions:', 'en tenant compte des exceptions suivantes\u00A0:'],
@@ -183,6 +186,7 @@ const staticReplacements = new Map([
     ['Catacombs deck', 'deck Catacombes'],
     ['Ignore the text', 'Ignorez le texte'],
     ['the skill indicated by the investigation attempt', `la compétence indiquée lors de la tentative d'enquête`],
+    ['You must (choose one)', 'Vous devez (choisir une option)'],
 
     // location
     ['unrevealed locations', 'lieux non-révélés'],
@@ -217,6 +221,9 @@ const staticReplacements = new Map([
     ['this location', 'ce lieu'],
     ['farthest from you', 'le plus éloigné de vous'],
     ['After you discover', 'Après avoir découvert'],
+    ['from the top of your deck', 'du dessus de votre deck'],
+    ['the top card of your deck', 'la carte du dessus de votre deck'],
+    ['the token pool', 'la réserve de pions'],
 
     ['Discard', 'Défaussez'],
     ['discard', 'défaussez'],
@@ -224,11 +231,15 @@ const staticReplacements = new Map([
     ['shroud', 'valeur occulte'],
     ['hidden', 'Cachée'],
     ['enemy', 'ennemi'],
+    ['aloof', 'Distant'],
     ['clue', 'indice'],
+    ['+1 fight', '+1 combat'],
+    ['+1 evade', '+1 évasion'],
     ['Agenda', 'Intrigue'],
     ['treachery', 'traitrise'],
     ['asset', 'soutien'],
     ['investigator', 'investigateur'],
+    ['locations', 'lieux'],
     ['location', 'lieu'],
 
     ['<b>Forced</b>', '<b>Forcé</b>'],
@@ -239,8 +250,9 @@ const staticReplacements = new Map([
     ['<b>Revelation</b>', '<b>Révélation</b>'],
     ['<b>Parley.</b>', '<b>Discussion</b>'],
     ['gains hunter', 'gagne Chasseur'],
-    ['Hunter.', 'Chasseur.'],
-    ['Retaliate.', 'Riposte.'],
+    ['Hunter', 'Chasseur'],
+    ['Surge', 'Renfort'],
+    ['Retaliate', 'Riposte'],
     ['health', 'vie'],
     ['sanity', 'santé mentale'],
 
@@ -268,6 +280,7 @@ const staticReplacements = new Map([
     [' with ', ' avec '],
     [' among ', ' parmi '],
     ['Shuffle', 'Mélangez'],
+    ['loses', 'perd'],
 
 ])
 
@@ -288,10 +301,25 @@ const replacementFunctions = [
             .replaceAll(patternToLookForWithName, toReplaceWithName)
             .replaceAll(patternToLookForWithBackName, toReplaceWithBackName)
     },
+
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const putIntoPlayRegExp = /(Put (.*) into play)/
-        const matches = suggestedText.match(putIntoPlayRegExp)
+        const pattern = 'After <name> is revealed'
+        
+        const patternToLookForWithName = pattern.replace('<name>', referenceCard.name)
+        const toReplaceWithName = `Après que ${translationCard.name} est révélé`;
+        
+        const patternToLookForWithBackName = pattern.replace('<name>', referenceCard.back_name)
+        const toReplaceWithBackName = `Après que ${translationCard.back_name} est révélé`;
+
+        return suggestedText
+            .replaceAll(patternToLookForWithName, toReplaceWithName)
+            .replaceAll(patternToLookForWithBackName, toReplaceWithBackName)
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regExp = /(Put (.*) into play)/i
+        const matches = suggestedText.match(regExp)
 
         //console.log('matches', matches)
 
@@ -304,8 +332,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(must spend (.*), as a group)/
-        const matches = suggestedText.match(mustSpendAsAGroupRegExp)
+        const regExp = /(must spend (.*), as a group)/
+        const matches = suggestedText.match(regExp)
 
         //console.log('matches', matches)
 
@@ -316,6 +344,31 @@ const replacementFunctions = [
             return suggestedText
         }
     },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(Spend (.*) resource)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `dépensez ${matches[2]} ressource`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(lose (.*) resources)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `perdre ${matches[2]} ressources`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
         const regexp = /(Takes? (\d) damage)/i
@@ -342,8 +395,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(Test (\[.*\] \(.*\)))/
-        const matches = suggestedText.match(mustSpendAsAGroupRegExp)
+        const regExp = /(Test (\[.*\] \(.*\)))/
+        const matches = suggestedText.match(regExp)
 
         if(matches){
             return suggestedText.replace(matches[1], `effectuez un test de ${matches[2]}`)
@@ -354,8 +407,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(\[\[(\w+)\]\])/g
-        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+        const regExp = /(\[\[(\w+)\]\])/g
+        const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
             suggestedText = suggestedText.replace(match[1], `[[${translateTrait(match[2])}]]`)
@@ -365,8 +418,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(Perform the setup as indicated in (.*) Campaign Guide)/g
-        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+        const regExp = /(Perform the setup as indicated in (.*) Campaign Guide)/g
+        const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
             suggestedText = suggestedText.replace(
@@ -379,8 +432,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(Remove (.*) from the game)/g
-        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+        const regExp = /(Remove (.*) from the game)/g
+        const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
             suggestedText = suggestedText.replace(
@@ -393,8 +446,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(Set (.*) aside, out of play)/g
-        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+        const regExp = /(Set (.*) aside, out of play)/g
+        const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
             suggestedText = suggestedText.replace(
@@ -407,8 +460,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(put (.*) into play)/g
-        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+        const regExp = /(put (.*) into play)/g
+        const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
             suggestedText = suggestedText.replace(
@@ -421,8 +474,8 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const mustSpendAsAGroupRegExp = /(empty (.*)location)/g
-        const matches = suggestedText.matchAll(mustSpendAsAGroupRegExp)
+        const regExp = /(empty (.*)location)/g
+        const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
             suggestedText = suggestedText.replace(
@@ -440,6 +493,22 @@ const replacementFunctions = [
         return suggestedText
             .replaceAll(referenceCard.name, translationCard.name)
             .replaceAll(referenceCard.back_name, translationCard.back_name)
+    },
+
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regExp = /((\S)\:)/g
+        const matches = suggestedText.matchAll(regExp)
+
+        for(const match of matches){
+            console.log('match', match[1], match[2])
+            suggestedText = suggestedText.replace(
+                match[1], 
+                `${match[2]}\u00A0:`
+            )
+        }
+
+        return suggestedText
     },
 ]
 
