@@ -41,7 +41,13 @@ export const sameTranslationTraits = new Set([
 
     
     // tcu
-    'Tarot'
+    'Tarot',
+
+    // side
+    'Bayou',
+    'Dhole',
+    'Gug',
+
 
 ])
 
@@ -97,8 +103,13 @@ export const sameTranslationNames = new Set([
     'Improvisation',
     'Poltergeist',
     'Corrosion',
-    'Mano a Mano'
+    'Mano a Mano',
 
+
+    // side
+    'Garden District',
+    'Broadmoor',
+    'Faubourg Marigny',
 
 ])
 
