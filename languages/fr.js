@@ -5,7 +5,6 @@
 
 // traits that are exactly the same in French as in English
 export const sameTranslationTraits = new Set([
-    undefined,
     // core
     'Miskatonic.',
     'Miskatonic. Central.',
@@ -44,7 +43,6 @@ const traitTranslation = new Map([
 
 // name that are exactly the same in French as in English
 export const sameTranslationNames = new Set([
-    undefined,
     // core
     'Barricade',
     'Endurance', 
@@ -86,7 +84,6 @@ export const sameTranslationNames = new Set([
 
 // flavor texts that are exactly the same in French as in English
 export const sameTranslationFlavor = new Set([
-    undefined,
     'Negotium perambulans in tenebris...'
 ])
 
