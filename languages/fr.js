@@ -6,31 +6,41 @@
 // traits that are exactly the same in French as in English
 export const sameTranslationTraits = new Set([
     // core
-    'Miskatonic.',
-    'Miskatonic. Central.',
-    'Mutation.',
-    'Arkham.',
-    'Arkham. Central.',
-    'Talent.',
-    'Talent. Science.',
-    'Obstacle.', 
+    'Miskatonic',
+    'Central',
+    'Arkham',
+
+    'Obstacle', 
+    'Mutation',
+
+    'Byakhee',
+    'Coterie', 
+
+    'Talent',
+    'Science',
+    'Police', 
+    'Expert',
+
     
     // investigators
-    'Clairvoyant.',
+    'Clairvoyant',
 
     // dwl
-    'Dunwich. Central.',
-    'Dunwich.',
-    'Reporter.',
-    'Train.',
+    'Dunwich',
+    'Reporter',
+    'Train',
+    'Abomination',
+    'Poison',
+    'Shoggoth',
+    'Instrument',
 
     // ptc
-    'Paris.',
-    'Assistant.',
+    'Paris',
+    'Assistant',
 
     
     // tcu
-    'Tarot.'
+    'Tarot'
 
 ])
 

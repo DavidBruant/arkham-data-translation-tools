@@ -40,6 +40,35 @@ export function getPackFileList(arkhamDataRootDir, pack){
     return readdir(packDirectory)
 }
 
+/**
+ * @param {string} traitsText 
+ * @returns {string[]}
+ */
+function parseTraits(traitsText){
+    return traitsText
+        .split(' ')
+        .map( text => text.replace('.', '').trim() )
+}
+
+
+
+/**
+ * Verify that traits are the same 
+ * 
+ * @param {string} referenceTraitsString 
+ * @param {string} translationTraitsString 
+ */
+function areTraitsTranslated(referenceTraitsString, translationTraitsString){
+    const referenceTraits = parseTraits(referenceTraitsString)
+    const translationTraits = parseTraits(translationTraitsString)
+
+    return referenceTraits.every((trait, i) => {
+        const correspondingTranslationTrait = translationTraits[i]
+        return trait !== correspondingTranslationTrait || sameTranslationTraits.has(correspondingTranslationTrait || '')
+    })
+
+}
+
 
 /**
  * This is meant to be an approximation
@@ -61,7 +90,7 @@ export function findMissingTranslations(translationCard, referenceCard){
         if(referenceText && referenceText.length >= 1){ // is there something to translate?
 
             if(prop === 'traits'){
-                if(!sameTranslationTraits.has(translationText) && translationText === referenceText){
+                if(!areTraitsTranslated(referenceText, translationText || '')){
                     missingTranslations.push({
                         referenceCard,
                         translationCard,
@@ -71,9 +100,11 @@ export function findMissingTranslations(translationCard, referenceCard){
             }
             else{
                 if(prop === 'name' || prop === 'back_name'){
+                    const referenceCardTraits = referenceCard.traits ? parseTraits(referenceCard.traits) : [];
+
                     if(
                         referenceCard.type_code === 'investigator' || 
-                        (referenceCard.type_code === 'asset' && (referenceCard.traits?.includes('Ally.') || referenceCard.traits?.includes('Humanoid.') || referenceCard.traits?.includes('Bystander.') || referenceCard.traits?.includes('Cultist.')) && referenceCard.is_unique) || 
+                        (referenceCard.type_code === 'asset' && (referenceCardTraits.includes('Ally') || referenceCardTraits.includes('Humanoid') || referenceCardTraits.includes('Bystander') || referenceCardTraits.includes('Cultist')) && referenceCard.is_unique) || 
                         (referenceCard.type_code === 'enemy' && referenceCard.is_unique)
                     ){
                         // names of unique people/enemies aren't translated

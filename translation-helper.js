@@ -122,14 +122,18 @@ catch(e){
 }
 
 
-if(!card){
-    console.info(`Choose an untranslated card with '--card <card>'`)
-    
+if(!card){    
     const missingTranslations = await getUntranslatedCardsList(arkhamDataRoot, pack, file, language)
 
-    const missingTranslationCodes = new Set(missingTranslations.map(({referenceCard}) => referenceCard.code))
+    if(missingTranslations.length === 0){
+        console.info('✅ Every card in this pack is already translated')
+    }
+    else{
+        const missingTranslationCodes = new Set(missingTranslations.map(({referenceCard}) => referenceCard.code))
 
-    console.info('Choices: ', [...missingTranslationCodes].join(' | '))
+        console.info('Choices: ', [...missingTranslationCodes].join(' | '))
+        console.info(`Choose an untranslated card with '--card <card>'`)    
+    }
 
     process.exit()
 }
