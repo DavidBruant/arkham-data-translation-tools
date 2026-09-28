@@ -7,97 +7,17 @@ import {readFile, readdir} from 'node:fs/promises'
 
 import leven from 'leven';
 
+import {parseTraits} from './languages/shared.js'
+
+
 // directory conventions of https://github.com/Kamalisk/arkhamdb-json-data
 export const packsDir = 'pack'
 export const translationDir = 'translations'
 
-
 /** @type {TranslatableProperty[]} */
 export const translatableProperties = ['name', 'traits', 'text', 'flavor', 'back_name', 'back_flavor', 'back_text'];
 
-
-// traits that are exactly the same in French as in English
-const similarFrenchTranslationTraits = new Set([
-    undefined,
-    // core
-    'Miskatonic.',
-    'Miskatonic. Central.',
-    'Mutation.',
-    'Arkham.',
-    'Arkham. Central.',
-    'Talent.',
-    'Talent. Science.',
-    'Obstacle.', 
-    
-    // dwl
-    'Dunwich. Central.',
-    'Dunwich.',
-    'Reporter.',
-    'Train.',
-
-    // ptc
-    'Paris.',
-    'Assistant.',
-
-    
-    // tcu
-    'Tarot.'
-
-])
-
-export const traitFrenchTranslation = new Map([
-    ['Humanoid', 'Humanoïde']
-])
-
-
-// name that are exactly the same in French as in English
-const similarFrenchTranslationNames = new Set([
-    undefined,
-    // core
-    'Barricade',
-    'Endurance', 
-    'M1911',
-    'Prestidigitation',
-    'French Hill',
-    'Acolyte',
-
-    // dwl
-    'La Bella Luna',
-    //'Peter Clover',
-    'Thrall',
-    'Adaptable',
-    'Springfield M1903',
-    
-    // ptc
-    'Recharge',
-    'St. Barnabé', 
-    'Montparnasse', 
-    'Montmartre',
-    'Opéra Garnier', 
-    "Gare d'Orsay",
-    'Canal Saint-Martin', 
-    'Le Marais',
-    'Notre-Dame', 
-    'Suggestion',
-    "Porte de l'Avancée", 
-    'Chœur Gothique',
-    'Lupara',
-    'Fin', 
-    'Possession',
-    'Sophie',
-    'Improvisation',
-    'Poltergeist',
-    'Corrosion',
-    'Mano a Mano'
-
-])
-
-// flavor texts that are exactly the same in French as in English
-const similarFrenchTranslationFlavor = new Set([
-    undefined,
-    'Negotium perambulans in tenebris...'
-])
-
+/** @typedef {import("./languages/model.js")} LanguageModule */
 
 
 /**
@@ -122,14 +42,38 @@ export function getPackFileList(arkhamDataRootDir, pack){
 }
 
 
+
+
+
+/**
+ * Verify that traits are the same 
+ * 
+ * @param {string} referenceTraitsString 
+ * @param {string} translationTraitsString 
+ * @param {Set<string>} sameTranslationTraits 
+ */
+function areTraitsTranslated(referenceTraitsString, translationTraitsString, sameTranslationTraits){
+    const referenceTraits = parseTraits(referenceTraitsString)
+    const translationTraits = parseTraits(translationTraitsString)
+
+    return referenceTraits.every((trait, i) => {
+        const correspondingTranslationTrait = translationTraits[i]
+        return trait !== correspondingTranslationTrait || sameTranslationTraits.has(correspondingTranslationTrait || '')
+    })
+
+}
+
+
 /**
  * This is meant to be an approximation
  * 
  * @param {Card} translationCard 
  * @param {Card} referenceCard
+ * @param {LanguageModule} languageModule 
  * @returns {MissingTranslation[]}
  */
-export function findMissingTranslations(translationCard, referenceCard){
+export function findMissingTranslations(translationCard, referenceCard, languageModule){
+    //console.log('findMissingTranslations', translationCard, referenceCard)
 
     /** @type {ReturnType<findMissingTranslations>} */
     const missingTranslations = []
@@ -141,7 +85,7 @@ export function findMissingTranslations(translationCard, referenceCard){
         if(referenceText && referenceText.length >= 1){ // is there something to translate?
 
             if(prop === 'traits'){
-                if(!similarFrenchTranslationTraits.has(translationText) && translationText === referenceText){
+                if(!areTraitsTranslated(referenceText, translationText || '', languageModule.sameTranslationTraits)){
                     missingTranslations.push({
                         referenceCard,
                         translationCard,
@@ -151,15 +95,17 @@ export function findMissingTranslations(translationCard, referenceCard){
             }
             else{
                 if(prop === 'name' || prop === 'back_name'){
+                    const referenceCardTraits = referenceCard.traits ? parseTraits(referenceCard.traits) : [];
+
                     if(
                         referenceCard.type_code === 'investigator' || 
-                        (referenceCard.type_code === 'asset' && (referenceCard.traits?.includes('Ally.') || referenceCard.traits?.includes('Humanoid.') || referenceCard.traits?.includes('Bystander.')) && referenceCard.is_unique) || 
+                        (referenceCard.type_code === 'asset' && (referenceCardTraits.includes('Ally') || referenceCardTraits.includes('Humanoid') || referenceCardTraits.includes('Bystander') || referenceCardTraits.includes('Cultist')) && referenceCard.is_unique) || 
                         (referenceCard.type_code === 'enemy' && referenceCard.is_unique)
                     ){
                         // names of unique people/enemies aren't translated
                     }
                     else{
-                        if(translationText === referenceText && !similarFrenchTranslationNames.has(translationText)){
+                        if(translationText === referenceText && !languageModule.sameTranslationNames.has(translationText)){
                             missingTranslations.push({
                                 referenceCard,
                                 translationCard,
@@ -171,7 +117,7 @@ export function findMissingTranslations(translationCard, referenceCard){
                 }
                 else{
                     if(prop === 'flavor'){
-                        if(translationText === referenceText && !similarFrenchTranslationFlavor.has(translationText)){
+                        if(translationText === referenceText && !languageModule.sameTranslationFlavor.has(translationText)){
                             missingTranslations.push({
                                 referenceCard,
                                 translationCard,
@@ -183,20 +129,20 @@ export function findMissingTranslations(translationCard, referenceCard){
                         // base case, if referenceText and translationText are very close, a translation is missing
                         const maxDistance = referenceText.length*5/100
                         const levDistance = leven(referenceText, translationText || '', {maxDistance});
+                        //const levDistance = leven(referenceText, translationText || '');
                         
                         const threshold = maxDistance-1
 
-                        if(translationText && levDistance < threshold){
-                            //console.log('referenceText', referenceText)
-                            //console.log('translationText', translationText)
-                            // console.log('maxDistance', maxDistance, 'levDistance', levDistance, 'threshold', threshold)
+                        //console.log('referenceText', referenceText)
+                        //console.log('translationText', translationText)
+                        //console.log('maxDistance', maxDistance, 'levDistance', levDistance, 'threshold', threshold)
 
+                        if(translationText && levDistance < threshold){
                             missingTranslations.push({
                                     referenceCard,
                                     translationCard,
                                     property: prop
                             })
-                            
                         }
                     }
                 }
@@ -230,9 +176,10 @@ export function getLanguageList(arkhamDataRootDir){
  * @param {string} pack 
  * @param {string} file 
  * @param {string} language 
+ * @param {LanguageModule} languageModule 
  * @returns 
  */
-export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language){
+export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language, languageModule){
     const referenceFilepath = join(arkhamDataRootDir, packsDir, pack, file)
 
     const translationPackDirectory = join(arkhamDataRootDir, translationDir, language, packsDir, pack)
@@ -260,7 +207,7 @@ export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language
                     console.error(`❌ Missing translated card for ${referenceFilepath} code ${referenceCard.code}`)
                 }
                 else{
-                    const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard)
+                    const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard, languageModule)
 
                     if(missingTranslationsForThisCard.length >= 1){
                         missingTranslations = [
@@ -285,9 +232,10 @@ export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language
  * @param {string} file 
  * @param {string} cardCode 
  * @param {string} language 
+ * @param {LanguageModule} languageModule
  * @returns 
  */
-export function getCardMissingTranslationsList(arkhamDataRootDir, pack, file, cardCode, language){
+export function getCardMissingTranslationsList(arkhamDataRootDir, pack, file, cardCode, language, languageModule){
     const referenceFilepath = join(arkhamDataRootDir, packsDir, pack, file)
     const translationFilepath = join(arkhamDataRootDir, translationDir, language, packsDir, pack, file)
 
@@ -310,6 +258,36 @@ export function getCardMissingTranslationsList(arkhamDataRootDir, pack, file, ca
             throw new Error(`❌ Missing translation card for code ${cardCode} in translation file ${translationFilepath}`)
         }
 
-        return findMissingTranslations(translationCard, referenceCard)
+        return findMissingTranslations(translationCard, referenceCard, languageModule)
     })  
+}
+
+
+/**
+ * 
+ * @param {string} language 
+ * @returns {Promise<LanguageModule>}
+ */
+export async function importLanguageModule(language){
+    /** @type {LanguageModule} */
+    let languageModule
+    const languageModulePath = join(import.meta.dirname, 'languages', `${language}.js`)
+
+    try{
+        languageModule = await import(languageModulePath)
+    }
+    catch(e){
+        // @ts-ignore
+        if(e.code === 'ERR_MODULE_NOT_FOUND'){
+            // @ts-ignore
+            console.error(`❌ Missing language module`, languageModulePath, '\n\n')
+        }
+        else{
+            console.error(`❌ Problem trying to import language module`, languageModulePath, e, '\n\n')
+        }
+
+        languageModule = await import(join(import.meta.dirname, 'languages', `model.js`))
+    }
+
+    return languageModule
 }

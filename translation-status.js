@@ -2,6 +2,8 @@
 
 //@ts-check
 
+/** @import {LanguageModule} from './shared.js' */
+
 import {join} from 'node:path'
 import {readFile, readdir, stat} from 'node:fs/promises'
 import { parseArgs, styleText } from 'node:util';
@@ -9,7 +11,8 @@ import { parseArgs, styleText } from 'node:util';
 import { select } from '@inquirer/prompts';
 import {sum} from 'd3-array'
 
-import { findMissingTranslations, getLanguageList, getReferencePackList, packsDir, translatableProperties, translationDir } from './shared.js'
+import { findMissingTranslations, getLanguageList, getReferencePackList, importLanguageModule, packsDir, translatableProperties, translationDir } from './shared.js'
+
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
@@ -71,6 +74,10 @@ if(!language){
         choices: languageOptions.sort().map(l => ({name: l, value: l}))
     });
 }
+
+const languageModule = await importLanguageModule(language)
+
+
 
 if(all && pack){
     console.error(`You cannot choose both --all and --pack <pack>. You need to pick only one`)
@@ -356,7 +363,7 @@ async function getFileTranslationStatus(language, pack, packFilename){
                 missingTranslationCards.push(referenceCard.code)
             }
             else{
-                const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard)
+                const missingTranslationsForThisCard = findMissingTranslations(translationCard, referenceCard, languageModule)
 
                 if(missingTranslationsForThisCard.length >= 1){
                     missingTranslations = [
@@ -382,15 +389,6 @@ async function getFileTranslationStatus(language, pack, packFilename){
         missingTranslations,
         packFilename
     }
-}
-
-
-
-if(all){
-    const referencePackDirs = await getReferencePackList(arkhamDataRoot)
-
-    console.log('PPP do overall translation status for the given language')
-    process.exit()
 }
 
 
