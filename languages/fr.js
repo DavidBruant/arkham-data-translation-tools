@@ -1,6 +1,8 @@
 //@ts-check
 
-/** @import { translatableProperties } from '../shared.js' */
+import { parseTraits } from './shared.js'
+
+/** @import {} from '../types.ts' */
 
 
 // traits that are exactly the same in French as in English
@@ -523,12 +525,15 @@ function translateTrait(trait){
 
 /**
  * 
- * @param {string} traits
+ * @param {string} traitsString
  */
-function suggestFrenchTraitsTranslation(traits){
-    console.warn(`No good trait translation for now. It'll come soon.`)
-    return traits
+function suggestFrenchTraitsTranslation(traitsString){
+    const traits = parseTraits(traitsString)
 
+    return traits
+        .map(translateTrait)
+        .map(t => t+'.')
+        .join(' ')
 }
 
 
@@ -537,7 +542,7 @@ function suggestFrenchTraitsTranslation(traits){
  * 
  * @param {Card} referenceCard 
  * @param {Card} translationCard 
- * @param {translatableProperties[number]} property
+ * @param {TranslatableProperty} property
  */
 function suggestFrenchTextTranslation(referenceCard, translationCard, property){
     const referenceText = referenceCard[property]
@@ -564,7 +569,7 @@ function suggestFrenchTextTranslation(referenceCard, translationCard, property){
  * 
  * @param {Card} referenceCard 
  * @param {Card} translationCard 
- * @param {translatableProperties[number]} property 
+ * @param {TranslatableProperty[number]} property 
  */
 export function suggestTranslation(referenceCard, translationCard, property){
     if(property === 'name' || property === 'back_name' || property === 'flavor' || property === 'back_flavor'){

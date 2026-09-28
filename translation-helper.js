@@ -10,7 +10,8 @@ import minimist from 'minimist'
 
 import { 
     getCardMissingTranslationsList, getLanguageList, getPackFileList, getReferencePackList, getUntranslatedCardsList, 
-    packsDir, translationDir, translatableProperties
+    packsDir, translationDir, translatableProperties,
+    importLanguageModule
 } from './shared.js'
 import { suggestTranslation } from './languages/fr.js'
 
@@ -53,7 +54,7 @@ const {
     file, 
 } = argv
 
-/** @type {translatableProperties[number] | undefined} */
+/** @type {TranslatableProperty | undefined} */
 const property = argv.property;
 
 // card may be parsed as a number. It'll be correct later
@@ -67,6 +68,9 @@ if(!language){
 
     process.exit()
 }
+
+const languageModule = await importLanguageModule(language)
+
 
 if(!pack){
     console.info(`Choose a pack with '--pack <pack>'`)
@@ -123,7 +127,7 @@ catch(e){
 
 
 if(!card){    
-    const missingTranslations = await getUntranslatedCardsList(arkhamDataRoot, pack, file, language)
+    const missingTranslations = await getUntranslatedCardsList(arkhamDataRoot, pack, file, language, languageModule)
 
     if(missingTranslations.length === 0){
         console.info('✅ Every card in this pack is already translated')
@@ -150,7 +154,7 @@ if(typeof card === 'number'){
 }
 
 
-const missingTranslations = await getCardMissingTranslationsList(arkhamDataRoot, pack, file, card, language)
+const missingTranslations = await getCardMissingTranslationsList(arkhamDataRoot, pack, file, card, language, languageModule)
 
 if(!property){
     console.info(`Choose a property to translate with '--property <property>'`)
