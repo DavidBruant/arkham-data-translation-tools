@@ -58,7 +58,8 @@ const traitTranslation = new Map([
     ['Bystander', 'Passant'],
     ['Cultist', 'Cultiste'],
     ['Ally', 'Allié'],
-    ['Criminal', 'Criminel']
+    ['Criminal', 'Criminel'],
+    ['Elite', 'Élite'],
 ])
 
 
@@ -203,9 +204,11 @@ const staticReplacements = new Map([
     ['Attach to your location', 'Attachez cette carte à votre lieu'],
     ['Attached location gets', 'Le lieu attaché gagne'],
     ['When you investigate this location', 'Quand vous enquêtez dans ce lieu'],
+    ['After you successfully investigate', 'Après avoir enquêté avec succès'],
     ['while investigating this location', 'pendant que vous enquétiez dans ce lieu'],
 
     // Arkham LCG concepts / rule words
+    ['Check Campaign Log', 'Vérifiez votre Carnet de Campagne'],
     ['the victory display', 'la pile de victoire'],
     ['Attach this card to', 'Attachez cette carte à'],
     ['in your threat area', 'dans votre zone de menace'],
@@ -251,7 +254,7 @@ const staticReplacements = new Map([
     ['agenda', 'intrigue'],
     ['Act deck', 'deck Acte'],
     ['Act', 'Acte'],
-    ['act', 'acte'],
+    ['act ', 'acte '],
     ['treachery', 'traitrise'],
     ['asset', 'soutien'],
     ['investigator', 'investigateur'],
@@ -260,6 +263,7 @@ const staticReplacements = new Map([
 
     ['<b>Forced</b>', '<b>Forcé</b>'],
     ['<b>Spawn</b>', '<b>Génération</b>'],
+    ['Resign', 'Abandon'],
     ['spawn', 'générez'],
     ['Spawn', 'Générez'],
     ['<b>Prey</b>', '<b>Proie</b>'],
@@ -272,6 +276,7 @@ const staticReplacements = new Map([
     ['Retaliate', 'Riposte'],
     ['health', 'vie'],
     ['sanity', 'santé mentale'],
+    ['resources', 'ressources'],
 
     // generic words
     ['Flip this card', 'Retournez cette carte'],
@@ -287,7 +292,7 @@ const staticReplacements = new Map([
     ['underneath', 'sous'],
     ['adjacent to', 'adjacent à'],
     ['attached', 'attaché'],
-    ['Attach', 'Attachez'],
+    ['Attach ', 'Attachez '],
     ['she gains', 'elle gagne'],
     ['Gain', 'gagnez'],
     ['replace it', 'remplacez-la'],
@@ -341,8 +346,6 @@ const replacementFunctions = [
         const regExp = /(Put (.*) into play)/i
         const matches = suggestedText.match(regExp)
 
-        //console.log('matches', matches)
-
         if(matches){
             return suggestedText.replace(matches[1], `mettez en jeu ${matches[2]}`)
         }
@@ -354,8 +357,6 @@ const replacementFunctions = [
     (suggestedText, referenceCard, translationCard) => {
         const regExp = /(must spend (.*), as a group)/
         const matches = suggestedText.match(regExp)
-
-        //console.log('matches', matches)
 
         if(matches){
             return suggestedText.replace(matches[1], `doivent dépenser collectivement ${matches[2]}`)
@@ -521,7 +522,6 @@ const replacementFunctions = [
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
-            console.log('match', match[1], match[2])
             suggestedText = suggestedText.replace(
                 match[1], 
                 `${match[2]}\u00A0:`
