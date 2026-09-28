@@ -154,11 +154,14 @@ const staticReplacements = new Map([
     ['take 1 direct horror', 'subissez 1 horreur directe'],
     ['take 1 direct damage', 'subissez 1 dégât direct'],
     ['discard 2 random cards from your hand', 'défaussez 2 cartes prises au hasard dans votre main'],
+    ['a card from your hand', 'une carte de votre main'],
+
 
     // Skill tests
     ['is revealed during this test', 'est révélé lors de ce test'],
     ['If you succeed', 'En cas de réussite'],
     ['If you fail', `En cas d'échec`],
+    ['After you fail a skill test', `Après avoir échoué à un test de compétence`],
     ['After you fail', `Après avoir échoué`],
     ['For each point you fail by', 'Pour chaque point manquant'],
     ['for each horror on you', 'pour chaque horreur sur vous'],
@@ -174,7 +177,7 @@ const staticReplacements = new Map([
     ['The Dunwich Legacy', `L'Héritage de Dunwich`],
 
     // return
-    ['with the following exceptions:', 'en tenant compte des exceptions suivantes\u00A0:'],
+    ['with the following exceptions', 'en tenant compte des exceptions suivantes'],
     [
         'When gathering encounter sets, also gather the new encounter sets for', 
         'Quand vous réunissez les sets de rencontre, réunissez également les nouveaux sets de rencontre pour'
@@ -189,6 +192,7 @@ const staticReplacements = new Map([
     ['Ignore the text', 'Ignorez le texte'],
     ['the skill indicated by the investigation attempt', `la compétence indiquée lors de la tentative d'enquête`],
     ['You must (choose one)', 'Vous devez (choisir une option)'],
+    ['For the duration of this scenario', 'Pour la durée du scénario'],
 
     // location
     ['unrevealed locations', 'lieux non-révélés'],
@@ -199,6 +203,7 @@ const staticReplacements = new Map([
     ['Attach to your location', 'Attachez cette carte à votre lieu'],
     ['Attached location gets', 'Le lieu attaché gagne'],
     ['When you investigate this location', 'Quand vous enquêtez dans ce lieu'],
+    ['while investigating this location', 'pendant que vous enquétiez dans ce lieu'],
 
     // Arkham LCG concepts / rule words
     ['the victory display', 'la pile de victoire'],
@@ -209,6 +214,7 @@ const staticReplacements = new Map([
     ['from the top of the encounter deck', 'du dessus du deck Rencontre'],
     ['encounter deck', 'deck Rencontre'],
     ['encounter discard pile', 'pile de défausse Rencontre'],
+    ['discard pile', 'pile de défausse'],
     ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
     ['a skill test', 'un test de compétence'],
     ['in play', 'en jeu'],
@@ -226,7 +232,10 @@ const staticReplacements = new Map([
     ['from the top of your deck', 'du dessus de votre deck'],
     ['the top card of your deck', 'la carte du dessus de votre deck'],
     ['the token pool', 'la réserve de pions'],
+    ['the token bank', 'la réserve de pions'],
+    ['is defeated', 'est vaincu'],
 
+    ['discarded', 'défaussé'],
     ['Discard', 'Défaussez'],
     ['discard', 'défaussez'],
     ['Then,', 'Ensuite,'],
@@ -237,7 +246,12 @@ const staticReplacements = new Map([
     ['clue', 'indice'],
     ['+1 fight', '+1 combat'],
     ['+1 evade', '+1 évasion'],
+    ['Agenda deck', 'deck Intrigue'],
     ['Agenda', 'Intrigue'],
+    ['agenda', 'intrigue'],
+    ['Act deck', 'deck Acte'],
+    ['Act', 'Acte'],
+    ['act', 'acte'],
     ['treachery', 'traitrise'],
     ['asset', 'soutien'],
     ['investigator', 'investigateur'],
@@ -253,6 +267,7 @@ const staticReplacements = new Map([
     ['<b>Parley.</b>', '<b>Discussion</b>'],
     ['gains hunter', 'gagne Chasseur'],
     ['Hunter', 'Chasseur'],
+    ['Massive', 'Massif'],
     ['Surge', 'Renfort'],
     ['Retaliate', 'Riposte'],
     ['health', 'vie'],
@@ -268,10 +283,13 @@ const staticReplacements = new Map([
     ['to the right', 'à droite'],
     ['to the left', 'à gauche'],
     ['farthest', 'le plus éloigné'],
+    ['When ', 'Quand '],
     ['underneath', 'sous'],
     ['adjacent to', 'adjacent à'],
     ['attached', 'attaché'],
+    ['Attach', 'Attachez'],
     ['she gains', 'elle gagne'],
+    ['Gain', 'gagnez'],
     ['replace it', 'remplacez-la'],
     ['copy', 'exemplaire'],
     ['copies', 'exemplaires'],
