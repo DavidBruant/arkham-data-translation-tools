@@ -188,6 +188,10 @@ const staticReplacements = new Map([
     ['(Continued on reverse side.)', '(Suite au verso.)'],
 
     // random
+    [
+        `This card does not count toward that investigator's deck size.`, 
+        'Cette carte ne compte pas dans la Taille du deck de cet investigateur'
+    ], 
     ['While you are investigating', 'Tant que vous enquêtez'],
     ['Catacombs deck', 'deck Catacombes'],
     ['Ignore the text', 'Ignorez le texte'],
@@ -209,6 +213,7 @@ const staticReplacements = new Map([
 
     // Arkham LCG concepts / rule words
     ['Check Campaign Log', 'Vérifiez votre Carnet de Campagne'],
+    ['the lead investigateur', `l'investigateur principal`],
     ['the victory display', 'la pile de victoire'],
     ['Attach this card to', 'Attachez cette carte à'],
     ['in your threat area', 'dans votre zone de menace'],
@@ -237,6 +242,7 @@ const staticReplacements = new Map([
     ['the token pool', 'la réserve de pions'],
     ['the token bank', 'la réserve de pions'],
     ['is defeated', 'est vaincu'],
+    ['place 1 doom', 'placez une fatalité'],
 
     ['discarded', 'défaussé'],
     ['Discard', 'Défaussez'],
@@ -277,6 +283,7 @@ const staticReplacements = new Map([
     ['health', 'vie'],
     ['sanity', 'santé mentale'],
     ['resources', 'ressources'],
+    [' doom', ' fatalité'],
 
     // generic words
     ['Flip this card', 'Retournez cette carte'],
