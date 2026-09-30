@@ -148,17 +148,23 @@ const staticReplacements = new Map([
     ['After you end your turn at', 'Après avoir terminé votre tour dans'],
     ['At the end of your turn', 'À la fin de votre tour'],
     ['At the end of the round', 'À la fin du round'],
+    ['When your turn ends', 'Quand votre tour se termine'],
     [`When you reveal`, 'Quand vous révélez'],
     [`After you reveal`, 'Après avoir révélé'],
     ['After you defeat', 'Après avoir vaincu'],
+    ['When you play', 'Quand vous jouez'],
 
     // Bad consequences
     ['take 1 direct horror', 'subissez 1 horreur directe'],
+    ['1 direct horror', '1 horreur directe'],
     ['take 1 direct damage', 'subissez 1 dégât direct'],
+    ['1 direct damage', '1 dégât direct'],
     ['discard 2 random cards from your hand', 'défaussez 2 cartes prises au hasard dans votre main'],
+    ['Discard this card from your hand', 'défaussez cette carte de votre main'],
     ['a card from your hand', 'une carte de votre main'],
     ['This effect can cause the current agenda to advance', `Cet effet peut faire avancer l'intrigue en cours`],
-
+    ['this effect may cause the current agenda to advance', `cet effet peut faire avancer l'intrigue en cours`],
+    ['You automatically fail', 'vous échouez automatiquement'],
 
     // Skill tests
     ['is revealed during this test', 'est révélé lors de ce test'],
@@ -214,8 +220,13 @@ const staticReplacements = new Map([
     ['When you investigate this location', 'Quand vous enquêtez dans ce lieu'],
     ['After you successfully investigate', 'Après avoir enquêté avec succès'],
     ['while investigating this location', 'pendant que vous enquétiez dans ce lieu'],
+    ['of your location', 'de votre lieu'],
 
     // Arkham LCG concepts / rule words
+    ['Secretly add this card to your hand', 'Ajoutez secrètement cette carte à votre main'],
+    ['is immune to player card effects', 'est immunisé contre les effets de cartes Joueur'],
+    ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
+    ['Reveal a random token from the chaos bag', 'révélez un pion pris au hasard dans la réserve du Chaos'],
     ['Check Campaign Log', 'Vérifiez votre Carnet de Campagne'],
     ['the lead investigateur', `l'investigateur principal`],
     ['the victory display', 'la pile de victoire'],
@@ -228,9 +239,7 @@ const staticReplacements = new Map([
     ['encounter deck', 'deck Rencontre'],
     ['encounter discard pile', 'pile de défausse Rencontre'],
     ['discard pile', 'pile de défausse'],
-    ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
     ['a skill test', 'un test de compétence'],
-    ['in play', 'en jeu'],
     ['hand slot', 'emplacement de main'],
     ['upkeep phase', `phase d'entretien`],
     ['enemy phase', `phase des Ennemis`],
@@ -250,19 +259,31 @@ const staticReplacements = new Map([
     ['place 1 doom', 'placez une fatalité'],
     ['for this attack', 'pour cette attaque'],
     ['attacks you', 'vous attaque'],
-    ['is immune to player card effects', 'est immunisé contre les effets de cartes Joueur'],
     ['cannot take damage', 'ne peut pas subir de dégât'],
     ['Cannot be canceled', 'Ne peut pas être annulé'],
     ['of your deck', 'de votre deck'],
     ['After you leave', 'Après avoir quitté'],
     ['play area', 'zone de jeu'],
+    ['play action', 'action Jouer'],
+    ['move action', 'action Se Déplacer'],
+    ['draw action', 'action Piocher'],
+    ['resource action', 'action Ressource'],
+    ['during your turn', 'durant votre tour'],
+    ['if you did not perform', `si vous n'avez pas effectué`],
+    ['in your hand', 'dans votre main'],
+    ['from your hand', 'de votre main'],
+    ['next skill test', 'prochain test de compétence'],
+    ['skill test', 'test de compétence'],
+    ['in play', 'en jeu'],
+    ['this round', 'à ce round'],
 
     ['discarded', 'défaussé'],
     ['Discard', 'Défaussez'],
     ['discard', 'défaussez'],
     ['Then,', 'Ensuite,'],
+    ['shroud value', 'valeur occulte'],
     ['shroud', 'valeur occulte'],
-    ['hidden', 'Cachée'],
+    ['Hidden', 'Cachée'],
     ['enemy', 'ennemi'],
     ['aloof', 'Distant'],
     ['clue', 'indice'],
@@ -307,12 +328,14 @@ const staticReplacements = new Map([
     ['play', 'jouer'],
     ['weakness', 'faiblesse'],
     ['card', 'carte'],
+    ['event', 'événement'],
 
     // generic words
     ['if able', 'si possible'],
     ['Flip this card', 'Retournez cette carte'],
     ['its revealed side', 'sa face révélée'],
-    ['You must', 'vous devez'],
+    ['You must', 'Vous devez'],
+    ['you must', 'vous devez'],
     ['At the end of', 'À la fin de'],
     ['above', 'au-dessus'],
     ['below', 'en-dessous'],
@@ -339,6 +362,12 @@ const staticReplacements = new Map([
     ['loses', 'perd'],
     ['hand', 'main'],
     ['Otherwise', 'Sinon'],
+    ['If you have', 'Si vous avez'],
+    ['you perform', 'vous effectuez'],
+    ['lose', 'perdez'],
+    [' is ', ' est '],
+    ['the ', 'le '],
+    [' you  ', ' vous '],
 
 ])
 
@@ -488,7 +517,7 @@ const replacementFunctions = [
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
-            suggestedText = suggestedText.replace(match[1], `effectuez un test de ${match[2]}`)
+            suggestedText = suggestedText.replace(match[1], `Effectuez un test de ${match[2]}`)
         }
 
         return suggestedText
