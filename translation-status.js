@@ -12,6 +12,7 @@ import { select } from '@inquirer/prompts';
 import {sum} from 'd3-array'
 
 import { findMissingTranslations, getLanguageList, getReferencePackList, importLanguageModule, packsDir, translatableProperties, translationDir } from './shared.js'
+import { makeBarString } from './bar.js';
 
 
 
@@ -267,7 +268,7 @@ async function showFileTranslationStatus(language, pack, file){
                 console.log('🗋 ', styleText('bold', file), 'No card in the file is translated. Take 1 horror.')
             }
             else{
-                console.log(`📜 ${styleText('bold', file)} ${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)
+                console.log(`📜 ${styleText('bold', file)} ${makeBarString(numberOfTranslatedTexts, numberOfTranslatableTexts)} ${styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)}`)
                 const cardsMissingTranslationCodes = new Set(
                     fileTranslationStatus.missingTranslations.map(({referenceCard}) => referenceCard.code)
                 )
