@@ -125,16 +125,24 @@ if(all){
     console.info(makeBarString(numberOfTranslatedTexts, numberOfTranlatableTexts), styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranlatableTexts}`), '\n')
 
     console.info(styleText('bold','Translation status by pack'))
-    for(const {pack, translationStatus: {numberOfTranslatedTexts, numberOfTranlatableTexts}} of packTranslationStatuses){
+
+    for(const {pack, translationStatus: {numberOfTranslatedTexts, numberOfTranlatableTexts, fileTranslationStatuses}} of packTranslationStatuses){
         if(numberOfTranslatedTexts === numberOfTranlatableTexts){
-            console.log('✅', styleText('bold', pack))
+            console.info('✅', styleText('bold', pack))
         }
         else{
             if(numberOfTranslatedTexts === 0){
-                console.log('🗋 ', styleText('bold', pack), 'No card in the file is translated. Take 1 horror.')
+                const errorFS = fileTranslationStatuses.find(isFileTranslationStatusError)
+                if(errorFS){
+                    console.info(`❌ ${styleText('bold', pack)} Error: ${errorFS.error.message}`)
+                }
+                else{
+                    console.info('🗋 ', styleText('bold', pack), 'No card in the file is translated.', styleText('italic', 'Take 1 horror.'))
+
+                }
             }
             else{
-                console.log(`📜 ${makeBarString(numberOfTranslatedTexts, numberOfTranlatableTexts)} ${styleText('bold', pack)} ${styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated`)}`)
+                console.info(`📜 ${makeBarString(numberOfTranslatedTexts, numberOfTranlatableTexts)} ${styleText('bold', pack)} ${styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated`)}`)
             }
         }
     }
