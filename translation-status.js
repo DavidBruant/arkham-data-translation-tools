@@ -213,17 +213,17 @@ async function showPackTranslationStatus(language, pack){
 
 
     if(errors.length === 0 && numberOfTranslatedTexts === numberOfTranlatableTexts){
-        console.log(`✅ Every card in the pack is translated!`);
-        console.log(styleText('italic', 
+        console.info(`✅ Every card in the pack is translated!`);
+        console.info(styleText('italic', 
             'Each investigator earns 1 bonus experience, as they reflect, satisfied of the state of translation'
         ))
     }
     else{
         if(numberOfTranslatedTexts === 0){
-            console.log('🗋 No card in the pack is translated. Take 1 horror.\n')
+            console.info('🗋 No card in the pack is translated. Take 1 horror.\n')
         }
         else{
-            console.log(styleText('bold', `📜 Total - ${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`))
+            console.info(styleText('bold', `📜 Total - ${numberOfTranslatedTexts}/${numberOfTranlatableTexts} texts translated\n`))
         }
 
         packTranslationStatus.fileTranslationStatuses.sort((fileTS1, fileTS2) => {
@@ -249,7 +249,7 @@ async function showPackTranslationStatus(language, pack){
             const {packFilename} = fileTranslationStatus;
 
             if(isFileTranslationStatusError(fileTranslationStatus)){
-                console.log(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
+                console.info(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
             }
             else{
                 const numberOfTranslatableTexts = getNumberOfTranslatableTextsInFile(fileTranslationStatus)
@@ -257,14 +257,14 @@ async function showPackTranslationStatus(language, pack){
                 const numberOfTranslatedTexts =  numberOfTranslatableTexts - numberMissingTranslations
 
                 if(numberOfTranslatedTexts === numberOfTranslatableTexts){
-                    console.log('✅', styleText('bold', packFilename))
+                    console.info('✅', styleText('bold', packFilename))
                 }
                 else{
                     if(numberOfTranslatedTexts === 0){
-                        console.log('🗋 ', styleText('bold', packFilename), 'No card in the file is translated. Take 1 horror.')
+                        console.info('🗋 ', styleText('bold', packFilename), 'No card in the file is translated. Take 1 horror.')
                     }
                     else{
-                        console.log(`📜 ${makeBarString(numberOfTranslatedTexts, numberOfTranslatableTexts)} ${styleText('bold', packFilename)} ${styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)}`)
+                        console.info(`📜 ${makeBarString(numberOfTranslatedTexts, numberOfTranslatableTexts)} ${styleText('bold', packFilename)} ${styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)}`)
                     }
                 }
             }
@@ -288,7 +288,7 @@ async function showFileTranslationStatus(language, pack, file){
     const fileTranslationStatus = await getFileTranslationStatus(language, pack, file)
     
     if(isFileTranslationStatusError(fileTranslationStatus)){
-        console.log(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
+        console.info(`❌ Error with ${fileTranslationStatus.packFilename}: ${fileTranslationStatus.error.message}`)
     }
     else{
         const numberOfTranslatableTexts = getNumberOfTranslatableTextsInFile(fileTranslationStatus)
@@ -296,19 +296,19 @@ async function showFileTranslationStatus(language, pack, file){
         const numberOfTranslatedTexts =  numberOfTranslatableTexts - numberMissingTranslations
 
         if(numberOfTranslatedTexts === numberOfTranslatableTexts){
-            console.log('✅', styleText('bold', file))
+            console.info('✅', styleText('bold', file))
         }
         else{
             if(numberOfTranslatedTexts === 0){
-                console.log('🗋 ', styleText('bold', file), 'No card in the file is translated. Take 1 horror.')
+                console.info('🗋 ', styleText('bold', file), 'No card in the file is translated. Take 1 horror.')
             }
             else{
-                console.log(`📜 ${styleText('bold', file)} ${makeBarString(numberOfTranslatedTexts, numberOfTranslatableTexts)} ${styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)}`)
+                console.info(`📜 ${styleText('bold', file)} ${makeBarString(numberOfTranslatedTexts, numberOfTranslatableTexts)} ${styleText('dim', `${numberOfTranslatedTexts}/${numberOfTranslatableTexts} texts translated`)}`)
                 const cardsMissingTranslationCodes = new Set(
                     fileTranslationStatus.missingTranslations.map(({referenceCard}) => referenceCard.code)
                 )
 
-                console.log('Cards missing a translation:', [...cardsMissingTranslationCodes].join(' | '))
+                console.info('Cards missing a translation:', [...cardsMissingTranslationCodes].join(' | '))
             }
         }
     }
