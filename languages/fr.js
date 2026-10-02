@@ -40,6 +40,8 @@ export const sameTranslationTraits = new Set([
     // ptc
     'Paris',
     'Assistant',
+    'Geist',
+    'Avatar',
 
     
     // tcu
