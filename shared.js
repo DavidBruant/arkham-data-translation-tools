@@ -155,9 +155,6 @@ export function findMissingTranslations(translationCard, referenceCard, language
 
 
 
-
-
-
 /**
  * 
  * @param {string} arkhamDataRootDir 
@@ -176,14 +173,11 @@ export function getLanguageList(arkhamDataRootDir){
  * @param {string} pack 
  * @param {string} file 
  * @param {string} language 
- * @param {LanguageModule} languageModule 
  * @returns 
  */
-export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language, languageModule){
+export async function getReferenceAndTranslationCards(arkhamDataRootDir, pack, file, language){
     const referenceFilepath = join(arkhamDataRootDir, packsDir, pack, file)
-
-    const translationPackDirectory = join(arkhamDataRootDir, translationDir, language, packsDir, pack)
-    const translationFilepath = join(translationPackDirectory, file)
+    const translationFilepath = join(arkhamDataRootDir, translationDir, language, packsDir, pack, file)
 
     return Promise.all([
         readFile(referenceFilepath, 'utf-8'),
@@ -193,7 +187,25 @@ export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language
         const referenceCards = JSON.parse(referenceString)
         /** @type {Card[]} */
         const translationCards = JSON.parse(translationString)
-        
+        return {referenceCards, translationCards, translationFilepath}
+    })
+}
+
+
+
+/**
+ * 
+ * 
+ * @param {string} arkhamDataRootDir 
+ * @param {string} pack 
+ * @param {string} file 
+ * @param {string} language 
+ * @param {LanguageModule} languageModule 
+ */
+export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language, languageModule){
+
+    return getReferenceAndTranslationCards(arkhamDataRootDir, pack, file, language)
+    .then(({referenceCards, translationCards}) => {
         /** @type {ReturnType<findMissingTranslations>} */
         let missingTranslations = [];
         for(const referenceCard of referenceCards){
@@ -204,6 +216,8 @@ export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language
                 const translationCard = translationCards.find(({code: code2}) => referenceCard.code === code2)
 
                 if(!translationCard){
+                    const referenceFilepath = join(arkhamDataRootDir, packsDir, pack, file)
+
                     console.error(`❌ Missing translated card for ${referenceFilepath} code ${referenceCard.code}`)
                 }
                 else{

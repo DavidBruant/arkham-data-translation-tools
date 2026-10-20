@@ -9,7 +9,8 @@ export const sameTranslationTraits = new Set([
     'Arkham',
 ])
 
-const traitTranslation = new Map([
+// trait translation from English to target language
+export const traitTranslation = new Map([
     
 ])
 

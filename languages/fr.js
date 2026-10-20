@@ -51,17 +51,35 @@ export const sameTranslationTraits = new Set([
     'Bayou',
     'Dhole',
     'Gug',
-
+    'Machination',
+    'Tindalos',
 
 ])
 
-const traitTranslation = new Map([
+export const traitTranslation = new Map([
     ['Humanoid', 'Humanoïde'],
     ['Bystander', 'Passant'],
     ['Cultist', 'Cultiste'],
     ['Ally', 'Allié'],
     ['Criminal', 'Criminel'],
     ['Elite', 'Élite'],
+    [`Past`, `Passé`],
+    [`Present`, `Présent`],
+    [`Future`, `Futur`],
+    [`Portal`, `Portail`],
+    [`Scientist`, `Scientifique`],
+    [`Item`, `Objet`],
+    [`Tool`, `Outil`],
+    [`Plot`, `Complot`],
+    [`Syndicate`, `Syndicat`],
+    [`Ancient One`, `Grand Ancien`],
+    [`Monster`, `Monstre`],
+    [`Extradimensional`, `Extradimensionel`],
+    [`Hex`, `Sortilège`],
+    [`Scheme`, `Manigance`],
+    [`Hazard`, `Risque`],
+    [`Power`, `Pouvoir`],
+    [`Terror`, `Terreur`],
 ])
 
 
@@ -117,11 +135,10 @@ export const sameTranslationNames = new Set([
     'Garden District',
     'Broadmoor',
     'Faubourg Marigny',
-    //
+    // carnavale of horror
     'Bauta',
     'Medico Della Peste',
     'Pantalone',
-    ''
 
 ])
 

@@ -19,8 +19,9 @@ export function suggestTraitsTranslation(traitsString, traitTranslation){
  * @returns {string[]}
  */
 export function parseTraits(traitsText){
-    return traitsText
-        .split(' ')
-        .map( text => text.replace('.', '').trim() )
+    const dotSplit = traitsText.split('.')
+    
+    return dotSplit.slice(0, dotSplit.length -1)
+        .map( text => text.trim() )
 }
 
