@@ -2,15 +2,14 @@
 
 //@ts-check
 
-import { styleText } from 'node:util'
+import { styleText, parseArgs } from 'node:util'
 import {join} from 'node:path'
 import {stat} from 'node:fs/promises'
 
-import minimist from 'minimist'
 
 import { 
     getCardMissingTranslationsList, getLanguageList, getPackFileList, getReferencePackList, getUntranslatedCardsList, 
-    packsDir, translationDir, translatableProperties,
+    packsDir, translationDir,
     importLanguageModule
 } from './shared.js'
 import { suggestTranslation } from './languages/fr.js'
@@ -45,20 +44,32 @@ catch(e){
     process.exit(1)
 }
 
+const options = /** @type {const} */ ({
+    language: {
+        type: 'string',
+        short: 'l',
+    },
+    pack: {
+        type: 'string'
+    },
+    file: {
+        type: 'string',
+        short: 'f'
+    },
+    card: {
+        type: 'string',
+        short: 'c'
+    },
+    property: {
+        type: 'string',
+        short: 'p'
+    },
+})
 
-const argv = minimist(process.argv.slice(2));
+/** @type { {values: {language?: string, pack?: string, file?: string, card? : string, property?: TranslatableProperty}} } */
+// @ts-ignore
+const { values : {language, pack, file, card, property} } = parseArgs({ options });
 
-const { 
-    language, 
-    pack, 
-    file, 
-} = argv
-
-/** @type {TranslatableProperty | undefined} */
-const property = argv.property;
-
-// card may be parsed as a number. It'll be correct later
-let {card} = argv
 
 if(!language){
     console.info(`Choose a language with '--language <language>'`)
@@ -140,17 +151,6 @@ if(!card){
     }
 
     process.exit()
-}
-
-// fix card if it was parsed as a number
-if(typeof card === 'number'){
-    const str = card.toString(10)
-    if(str.length >= 5){
-        card = str
-    }
-    else{
-        card = str.padStart(5, '0')
-    }
 }
 
 
