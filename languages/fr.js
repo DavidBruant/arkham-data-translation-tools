@@ -117,6 +117,11 @@ export const sameTranslationNames = new Set([
     'Garden District',
     'Broadmoor',
     'Faubourg Marigny',
+    //
+    'Bauta',
+    'Medico Della Peste',
+    'Pantalone',
+    ''
 
 ])
 
@@ -257,6 +262,18 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(Heal (.*) horror)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `soignez ${matches[2]} horreur${matches[2] !== '1' ? 's' : ''}`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
         const regexp = /(deals? (.*) damage)/i
         const matches = suggestedText.match(regexp)
 
@@ -274,6 +291,30 @@ const replacementFunctions = [
 
         if(matches){
             return suggestedText.replace(matches[1], `défaussez les ${matches[2]} carte${matches[2] !== '1' ? 's' : ''} du dessus`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(Draw (.*) cards?)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `piochez ${matches[2]} carte${matches[2] !== '1' ? 's' : ''}`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(Lose (.*) actions?)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `perdez ${matches[2]} action${matches[2] !== '1' ? 's' : ''}`)
         }
         else{
             return suggestedText
@@ -461,7 +502,10 @@ const staticReplacements = new Map([
     ['for each damage on you', 'pour chaque dégât sur vous'],
 
     // limits/max
-    ['Group limit once per game.', `Limite collective d'une fois par partie.`],
+    ['Group limit once per game', `Limite collective d'une fois par partie`],
+    ['Limit once per game', `Limite d'une fois par partie`],
+    ['Group limit once per round', `Limite collective d'une fois par round`],
+    ['Group limit once per turn', `Limite collective d'une fois par tour`],
     ['Limit 1 per investigator.', `Limite de 1 par investigateur.`],
     ['Limit once per round', `Limite d'une fois par round`],
     ['Limit 1 per location', 'Limite de 1 par lieu'],
@@ -469,6 +513,12 @@ const staticReplacements = new Map([
     // Campaign-specific
     ['The Path to Carcosa', 'La Route de Carcosa'],
     ['The Dunwich Legacy', `L'Héritage de Dunwich`],
+
+    ['to the location in the clockwise direction', 'au lieu suivant dans le sens horaire'],
+    [
+        'his location is connected to the location in the counter-clockwise direction, as well as the clockwise direction',
+        'son lieu est à la fois connexe au lieu situé dans le sens antihoraire et au lieu dans le sens horaire'
+    ],
 
     // return
     ['with the following exceptions', 'en tenant compte des exceptions suivantes'],
@@ -512,6 +562,7 @@ const staticReplacements = new Map([
     ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
     ['Reveal a random token from the chaos bag', 'révélez un pion pris au hasard dans la réserve du Chaos'],
     ['reveal a random token from the chaos bag', 'révélez un pion pris au hasard dans la réserve du Chaos'],
+    ['While resolving the hunter keyword', 'Tant que vous résolvez le mot-clé Chasseur'],
     ['Check Campaign Log', 'Vérifiez votre Carnet de Campagne'],
     ['the lead investigator', `l'investigateur principal`],
     ['the victory display', 'la pile de victoire'],
@@ -534,6 +585,7 @@ const staticReplacements = new Map([
     ['with no investigators', 'sans investigateur'],
     ['the scenario reference card', 'la carte référence du scénario'],
     ['Each investigator', 'Chaque investigateur'],
+    ['Automatically evade', 'échappez automatiquement'],
     ['automatically evade', 'échappez automatiquement'],
     ['on the current agenda', `sur l'intrigue en cours`],
     ['at this location', 'dans ce lieu'],
@@ -575,6 +627,7 @@ const staticReplacements = new Map([
     ['shroud', 'valeur occulte'],
     ['Hidden', 'Cachée'],
     ['enemy', 'ennemi'],
+    ['Aloof', 'Distant'],
     ['aloof', 'Distant'],
     ['clue', 'indice'],
     ['+1 fight', '+1 combat'],
@@ -603,6 +656,7 @@ const staticReplacements = new Map([
     ['<b>Revelation</b>', '<b>Révélation</b>'],
     ['<b>Parley.</b>', '<b>Discussion</b>'],
     ['<b>Objective</b>', '<b>Objectif</b>'],
+    ['<b>Move</b>', '<b>Se Déplacer</b>'],
     ['gains hunter', 'gagne Chasseur'],
     ['Hunter', 'Chasseur'],
     ['Massive', 'Massif'],
@@ -636,6 +690,7 @@ const staticReplacements = new Map([
     ['to the right', 'à droite'],
     ['to the left', 'à gauche'],
     ['farthest', 'le plus éloigné'],
+    ['is connected', 'est connexe'],
     ['When ', 'Quand '],
     ['After ', 'Après '],
     ['underneath', 'sous'],
@@ -646,6 +701,7 @@ const staticReplacements = new Map([
     ['Attach ', 'Attachez '],
     ['she gains', 'elle gagne'],
     ['Gain', 'gagnez'],
+    ['Spend', 'Dépensez'],
     ['keyword', 'mot-clé'],
     ['replace it', 'remplacez-la'],
     ['copy', 'exemplaire'],
@@ -670,6 +726,8 @@ const staticReplacements = new Map([
     [' is ', ' est '],
     [' the ', ' le '],
     [' you  ', ' vous '],
+    [' as if  ', ' comme si '],
+    [' if  ', ' si '],
 
 ])
 

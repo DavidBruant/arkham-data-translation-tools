@@ -157,11 +157,15 @@ if(typeof card === 'number'){
 const missingTranslations = await getCardMissingTranslationsList(arkhamDataRoot, pack, file, card, language, languageModule)
 
 if(!property){
-    console.info(`Choose a property to translate with '--property <property>'`)
-    
     const missingTranslationProperties = missingTranslations.map(({property}) => property);
 
-    console.info('Choices: ', [...missingTranslationProperties].join(' | '))
+    if(missingTranslationProperties.length === 0){
+        console.info('Everything is already translated')
+    }
+    else{
+        console.info(`Choose a property to translate with '--property <property>'`)
+        console.info('Choices: ', [...missingTranslationProperties].join(' | '))
+    }
 
     process.exit()
 }
