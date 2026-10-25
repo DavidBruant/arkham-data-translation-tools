@@ -22,7 +22,6 @@ export const sameTranslationTraits = new Set([
     'Science',
     'Police', 
     'Expert',
-
     
     // investigators
     'Clairvoyant',
@@ -43,9 +42,10 @@ export const sameTranslationTraits = new Set([
     'Geist',
     'Avatar',
 
-    
     // tcu
     'Tarot',
+    'Service',
+    'Spectral',
 
     // side
     'Bayou',
@@ -57,19 +57,24 @@ export const sameTranslationTraits = new Set([
 ])
 
 export const traitTranslation = new Map([
+    // player cards
+    [`Item`, `Objet`],
+    [`Tool`, `Outil`],
+    [`Spell`, `Sort`],
+    [`Relic`, `Relique`],
+    ['Ally', 'Allié'],
+
+    // scenario cards
+    ['Criminal', 'Criminel'],
     ['Humanoid', 'Humanoïde'],
     ['Bystander', 'Passant'],
     ['Cultist', 'Cultiste'],
-    ['Ally', 'Allié'],
-    ['Criminal', 'Criminel'],
     ['Elite', 'Élite'],
     [`Past`, `Passé`],
     [`Present`, `Présent`],
     [`Future`, `Futur`],
     [`Portal`, `Portail`],
     [`Scientist`, `Scientifique`],
-    [`Item`, `Objet`],
-    [`Tool`, `Outil`],
     [`Plot`, `Complot`],
     [`Syndicate`, `Syndicat`],
     [`Ancient One`, `Grand Ancien`],
@@ -80,6 +85,16 @@ export const traitTranslation = new Map([
     [`Hazard`, `Risque`],
     [`Power`, `Pouvoir`],
     [`Terror`, `Terreur`],
+    [`Woods`, `Bois`],
+    [`Silver Twilight`, `Crépuscule d'Argent`],
+    [`Otherworld`, `Autre Monde`],
+    [`Witch`, `Ensorceleur`],
+    [`Curse`, `Malédiction`],
+    [`Lodge`, `Loge`],
+    [`Sanctum`, `Sanctuaire`],
+    [`Void`, `Néant`],
+    [`Nightgaunt`, `Maigre Bête de la Nuit`],
+    [`Omen`, `Présage`],
 ])
 
 
@@ -130,6 +145,11 @@ export const sameTranslationNames = new Set([
     'Corrosion',
     'Mano a Mano',
 
+    // tcu
+    'Terrible Secret',
+    'Baron Samedi',
+    'De Vermis Mysteriis',
+    'Eucatastrophe',
 
     // side
     'Garden District',
@@ -481,6 +501,7 @@ const staticReplacements = new Map([
 
     // costs
     ['As an additional cost for you to', 'En tant que coût supplémentaire pour que vous puissiez'],
+    ['as an additional cost for you to', 'en tant que coût supplémentaire pour'],
     ['As an additional cost to', 'En tant que coût supplémentaire pour'],
     ['must spend', 'doivent dépenser'],
     ['investigators at your location', 'les investigateurs dans votre lieu'],
@@ -495,6 +516,7 @@ const staticReplacements = new Map([
     [`After you reveal`, 'Après avoir révélé'],
     ['After you defeat', 'Après avoir vaincu'],
     ['When you play', 'Quand vous jouez'],
+    ['When an investigator is eliminated', `Quand un investigateur est éliminé`], 
 
     // Bad consequences
     ['take 1 direct horror', 'subissez 1 horreur directe'],
@@ -530,19 +552,23 @@ const staticReplacements = new Map([
     // Campaign-specific
     ['The Path to Carcosa', 'La Route de Carcosa'],
     ['The Dunwich Legacy', `L'Héritage de Dunwich`],
+    ['The Circle Undone', `Le Cercle Brisé`],
 
     ['to the location in the clockwise direction', 'au lieu suivant dans le sens horaire'],
     [
         'his location is connected to the location in the counter-clockwise direction, as well as the clockwise direction',
         'son lieu est à la fois connexe au lieu situé dans le sens antihoraire et au lieu dans le sens horaire'
     ],
+    ['"Missing Persons" section of your Campaign Log', 'section "Personnes disparues" du Carnet de Campagne'],
 
     // return
     ['with the following exceptions', 'en tenant compte des exceptions suivantes'],
+    ['the following additional rule applies', `appliquez la règle supplémentaire suivante`],
     [
         'When gathering encounter sets, also gather the new encounter sets for', 
         'Quand vous réunissez les sets de rencontre, réunissez également les nouveaux sets de rencontre pour'
     ],
+    ['as a reminder', `en tant qu'aide-mémoire`],
     ['shown here.', 'indiqués ci-dessous\u00A0:'],
     [`Construct the act deck`, `Constituez le deck Acte`],
     ['(Continued on reverse side.)', '(Suite au verso.)'],
@@ -581,6 +607,8 @@ const staticReplacements = new Map([
     ['reveal a random token from the chaos bag', 'révélez un pion pris au hasard dans la réserve du Chaos'],
     ['While resolving the hunter keyword', 'Tant que vous résolvez le mot-clé Chasseur'],
     ['Check Campaign Log', 'Vérifiez votre Carnet de Campagne'],
+    ['Record in your Campaign Log', `Indiquez dans votre Carnet de Campagne`],
+    ['Campaign Log', `Carnet de Campagne`],
     ['the lead investigator', `l'investigateur principal`],
     ['the victory display', 'la pile de victoire'],
     ['When you would draw', 'Quand vous devriez piocher'],
@@ -588,6 +616,7 @@ const staticReplacements = new Map([
     ['in your threat area', 'dans votre zone de menace'],
     ['it gains surge', `elle gagne Renfort`],
     ['gains surge', `gagne Renfort`],
+    ['gains peril', `gagne Péril`],
     ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
     ['the top card of the encounter deck', 'la carte du dessus du deck Rencontre'],
     ['from the top of the encounter deck', 'du dessus du deck Rencontre'],
@@ -601,10 +630,13 @@ const staticReplacements = new Map([
     ['upkeep phase', `phase d'entretien`],
     ['with no investigators', 'sans investigateur'],
     ['the scenario reference card', 'la carte référence du scénario'],
+    ['Each investigator must', 'Chaque investigateur doit'],
     ['Each investigator', 'Chaque investigateur'],
     ['Automatically evade', 'échappez automatiquement'],
     ['automatically evade', 'échappez automatiquement'],
     ['on the current agenda', `sur l'intrigue en cours`],
+    ['on this agenda', `sur cette intrigue`],
+    ['next to the agenda deck', `à coté du deck Intrigue`],
     ['at this location', 'dans ce lieu'],
     ['this location', 'ce lieu'],
     ['farthest from you', 'le plus éloigné de vous'],
@@ -635,6 +667,8 @@ const staticReplacements = new Map([
     ['In player order', `Dans l'ordre des joueurs`],
     ['in play', 'en jeu'],
     ['this round', 'à ce round'],
+    ['on any card', `sur n'importe quelle carte`],
+    ['its revelation effect', `son effet Révélation`],
 
     ['discarded', 'défaussé'],
     ['Discard', 'Défaussez'],
@@ -655,7 +689,8 @@ const staticReplacements = new Map([
     ['Act deck', 'deck Acte'],
     ['Act', 'Acte'],
     ['act ', 'acte '],
-    ['treachery', 'traitrise'],
+    ['threat area', `zone de menace`],
+    ['treachery', 'traîtrise'],
     ['asset', 'soutien'],
     ['The investigators', 'Les investigateurs'],
     ['Investigators', 'Les investigateurs'],
@@ -692,8 +727,13 @@ const staticReplacements = new Map([
     ['out of play', 'hors jeu'],
     ['play', 'jouer'],
     ['weakness', 'faiblesse'],
+    ['draws', 'pioche'],
+    ['draw', 'pioche'],
+    ['commit', 'attribuer'],
     ['card', 'carte'],
     ['event', 'événement'],
+    ['damage', 'dégât'],
+    ['horror', 'horreur'],
 
     // generic words
     ['if able', 'si possible'],
@@ -714,6 +754,10 @@ const staticReplacements = new Map([
     ['advance', 'avancez'],
     ['adjacent to', 'adjacent à'],
     [' on it', ' dessus'],
+    ['Flip back', 'Retournez'],
+    ['Flip', 'Retournez'],
+    ['flip back', 'retournez'],
+    ['flip', 'retournez'],
     ['attached', 'attaché'],
     ['Attach ', 'Attachez '],
     ['she gains', 'elle gagne'],
@@ -734,6 +778,7 @@ const staticReplacements = new Map([
     ['Shuffle', 'Mélangez'],
     ['loses', 'perd'],
     ['lose', 'perdez'],
+    ['Place', 'placez'],
     ['hand', 'main'],
     ['Otherwise', 'Sinon'],
     ['otherwise', 'sinon'],
@@ -778,8 +823,9 @@ function suggestFrenchTraitsTranslation(traitsString){
  * @param {Card} referenceCard 
  * @param {Card} translationCard 
  * @param {TranslatableProperty} property
+ * @param {Map<string, string>} [nameTranslations] translation of cards names in case referenceCard references other cards
  */
-function suggestFrenchTextTranslation(referenceCard, translationCard, property){
+function suggestFrenchTextTranslation(referenceCard, translationCard, property, nameTranslations = new Map()){
     const referenceText = referenceCard[property]
 
     if(!referenceText){
@@ -787,15 +833,18 @@ function suggestFrenchTextTranslation(referenceCard, translationCard, property){
     }
 
     let suggestedText = referenceText
+    
+    for(const [referenceName, translatedName] of nameTranslations){
+        suggestedText = suggestedText.replaceAll(referenceName, translatedName)
+    }
+    
     for(const replacementFunction of replacementFunctions){
         suggestedText = replacementFunction(suggestedText, referenceCard, translationCard)
-        //console.log('suggestedText', suggestedText)
     }
 
     for(const [englishPattern, frenchReplacement] of staticReplacements){
         suggestedText = suggestedText.replaceAll(englishPattern, frenchReplacement)
     }
-
 
     return suggestedText
 }
@@ -805,8 +854,9 @@ function suggestFrenchTextTranslation(referenceCard, translationCard, property){
  * @param {Card} referenceCard 
  * @param {Card} translationCard 
  * @param {TranslatableProperty[number]} property 
+ * @param {Map<string, string>} [nameTranslations] translation of cards names in case referenceCard references other cards
  */
-export function suggestTranslation(referenceCard, translationCard, property){
+export function suggestTranslation(referenceCard, translationCard, property, nameTranslations){
     if(property === 'name' || property === 'back_name' || property === 'flavor' || property === 'back_flavor'){
         return undefined
     }
@@ -816,6 +866,6 @@ export function suggestTranslation(referenceCard, translationCard, property){
     }
 
     if(property === 'text' || property === 'back_text'){
-        return suggestFrenchTextTranslation(referenceCard, translationCard, property)
+        return suggestFrenchTextTranslation(referenceCard, translationCard, property, nameTranslations)
     }
 }

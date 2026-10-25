@@ -10,7 +10,9 @@ import {stat} from 'node:fs/promises'
 import { 
     getCardMissingTranslationsList, getLanguageList, getPackFileList, getReferencePackList, getUntranslatedCardsList, 
     packsDir, translationDir,
-    importLanguageModule
+    importLanguageModule,
+    getReferenceAndTranslationCards,
+    getPackFileNameTranslations
 } from './shared.js'
 import { suggestTranslation } from './languages/fr.js'
 
@@ -136,6 +138,8 @@ catch(e){
     process.exit(1)
 }
 
+const {referenceCards, translationCards} = await getReferenceAndTranslationCards(arkhamDataRoot, pack, file, language)
+
 
 if(!card){    
     const missingTranslations = await getUntranslatedCardsList(arkhamDataRoot, pack, file, language, languageModule)
@@ -170,19 +174,24 @@ if(!property){
     process.exit()
 }
 
+const packFileNameTranslations = getPackFileNameTranslations(referenceCards, translationCards, languageModule.sameTranslationNames)
+
 const missingTranslation = missingTranslations.find(({property: prop}) => property === prop)
 
 if(!missingTranslation){
-    throw new TypeError(`No missing translation for card ${card}, property '${property}'`)
+    console.info(`No missing translation for card ${card}, property '${property}'`)
+}
+else{
+    console.info('Transation of card', language, pack, file, card, property)
+
+    console.info(styleText(['bold', 'green'], 'Original text:\n'), missingTranslation.referenceCard[property])
+    console.info(styleText(['bold', 'green'], 'Translated text:\n'), missingTranslation.translationCard[property])
+
+    const suggestedTranslation = suggestTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property, packFileNameTranslations)
+
+    if(suggestedTranslation){
+        console.info(styleText(['bold', 'blue'], 'Suggested translation:\n'), JSON.stringify(suggestedTranslation))
+    }
 }
 
-console.info('Transation of card', language, pack, file, card, property)
 
-console.info(styleText(['bold', 'green'], 'Original text:\n'), missingTranslation.referenceCard[property])
-console.info(styleText(['bold', 'green'], 'Translated text:\n'), missingTranslation.translationCard[property])
-
-const suggestedTranslation = suggestTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property)
-
-if(suggestedTranslation){
-    console.info(styleText(['bold', 'blue'], 'Suggested translation:\n'), JSON.stringify(suggestedTranslation))
-}
