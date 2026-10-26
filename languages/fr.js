@@ -299,6 +299,30 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(suffers? (\d) mental trauma)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `subit ${matches[2]} traumatisme${matches[2] !== '1' ? 's' : ''} mental`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(suffers? (\d) physical trauma)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `subit ${matches[2]} traumatisme${matches[2] !== '1' ? 's' : ''} physique`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
         const regexp = /(Heal (.*) horror)/i
         const matches = suggestedText.match(regexp)
 
@@ -328,6 +352,18 @@ const replacementFunctions = [
 
         if(matches){
             return suggestedText.replace(matches[1], `défaussez les ${matches[2]} carte${matches[2] !== '1' ? 's' : ''} du dessus`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(draw the topmost (.*) in the encounter discard pile)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `piochez ${matches[2]} la plus proche du sommet de la pile de défausse Rencontre`)
         }
         else{
             return suggestedText
@@ -517,10 +553,13 @@ const staticReplacements = new Map([
     ['After you defeat', 'Après avoir vaincu'],
     ['When you play', 'Quand vous jouez'],
     ['When an investigator is eliminated', `Quand un investigateur est éliminé`], 
+    ['When you discover', `Quand vous découvrez`],
 
     // Bad consequences
+    ['Take 1 direct horror', 'Subissez 1 horreur directe'],
     ['take 1 direct horror', 'subissez 1 horreur directe'],
     ['1 direct horror', '1 horreur directe'],
+    ['Take 1 direct damage', 'Subissez 1 dégât direct'],
     ['take 1 direct damage', 'subissez 1 dégât direct'],
     ['1 direct damage', '1 dégât direct'],
     ['discard 2 random cards from your hand', 'défaussez 2 cartes prises au hasard dans votre main'],
@@ -536,6 +575,7 @@ const staticReplacements = new Map([
     ['If you fail', `En cas d'échec`],
     ['After you fail a skill test', `Après avoir échoué à un test de compétence`],
     ['After you fail', `Après avoir échoué`],
+    ['for each point you succeeded by', `pour chaque point de réussite`],
     ['For each point you fail by', 'Pour chaque point manquant'],
     ['for each horror on you', 'pour chaque horreur sur vous'],
     ['for each damage on you', 'pour chaque dégât sur vous'],
@@ -548,6 +588,7 @@ const staticReplacements = new Map([
     ['Limit 1 per investigator.', `Limite de 1 par investigateur.`],
     ['Limit once per round', `Limite d'une fois par round`],
     ['Limit 1 per location', 'Limite de 1 par lieu'],
+    ['Limit 1 per asset', 'Limite 1 par soutien'],
 
     // Campaign-specific
     ['The Path to Carcosa', 'La Route de Carcosa'],
@@ -600,6 +641,7 @@ const staticReplacements = new Map([
     ['of your location', 'de votre lieu'],
 
     // Arkham LCG concepts / rule words
+    ['investigators may', `les investigateurs ont le droit de`],
     ['Secretly add this card to your hand', 'Ajoutez secrètement cette carte à votre main'],
     ['is immune to player card effects', 'est immunisé contre les effets de cartes Joueur'],
     ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
@@ -608,12 +650,17 @@ const staticReplacements = new Map([
     ['While resolving the hunter keyword', 'Tant que vous résolvez le mot-clé Chasseur'],
     ['Check Campaign Log', 'Vérifiez votre Carnet de Campagne'],
     ['Record in your Campaign Log', `Indiquez dans votre Carnet de Campagne`],
+    ['this test is automatically successful', 'ce test réussit automatiquement'],
     ['Campaign Log', `Carnet de Campagne`],
+    ['The lead investigator', `L'investigateur principal`],
     ['the lead investigator', `l'investigateur principal`],
     ['the victory display', 'la pile de victoire'],
     ['When you would draw', 'Quand vous devriez piocher'],
     ['Attach this card to', 'Attachez cette carte à'],
     ['in your threat area', 'dans votre zone de menace'],
+    ['the requisite number of clues', `le nombre d'indices requis`],
+    ['If there are no clues', `S'il n'y a aucun indice`],
+    ['the last clue', `le dernier indice`],
     ['it gains surge', `elle gagne Renfort`],
     ['gains surge', `gagne Renfort`],
     ['gains peril', `gagne Péril`],
@@ -625,11 +672,15 @@ const staticReplacements = new Map([
     ['discard pile', 'pile de défausse'],
     ['a skill test', 'un test de compétence'],
     ['hand slot', 'emplacement de main'],
+    ['the mythos phase', `la phase du Mythe`],
     ['mythos phase', `phase du Mythe`],
+    ['the enemy phase', `la phase des Ennemis`],
     ['enemy phase', `phase des Ennemis`],
+    ['the upkeep phase', `la phase d'entretien`],
     ['upkeep phase', `phase d'entretien`],
     ['with no investigators', 'sans investigateur'],
     ['the scenario reference card', 'la carte référence du scénario'],
+    ['Each remaining investigator', `Chaque investigateur restant`],
     ['Each investigator must', 'Chaque investigateur doit'],
     ['Each investigator', 'Chaque investigateur'],
     ['Automatically evade', 'échappez automatiquement'],
@@ -638,6 +689,7 @@ const staticReplacements = new Map([
     ['on this agenda', `sur cette intrigue`],
     ['next to the agenda deck', `à coté du deck Intrigue`],
     ['at this location', 'dans ce lieu'],
+    ['from this location', 'de ce lieu'],
     ['this location', 'ce lieu'],
     ['farthest from you', 'le plus éloigné de vous'],
     ['After you discover', 'Après avoir découvert'],
@@ -651,6 +703,8 @@ const staticReplacements = new Map([
     ['attacks you', 'vous attaque'],
     ['cannot take damage', 'ne peut pas subir de dégât'],
     ['Cannot be canceled', 'Ne peut pas être annulé'],
+    ['cannot be canceled', 'ne peut pas être annulé'],
+    ['For the remainder of the scenario', 'Pour le reste du scénario'],
     ['of your deck', 'de votre deck'],
     ['After you leave', 'Après avoir quitté'],
     ['play area', 'zone de jeu'],
@@ -669,6 +723,8 @@ const staticReplacements = new Map([
     ['this round', 'à ce round'],
     ['on any card', `sur n'importe quelle carte`],
     ['its revelation effect', `son effet Révélation`],
+    ['you control', 'que vous contrôlez'],
+    ['proceed to', `continuez à`],
 
     ['discarded', 'défaussé'],
     ['Discard', 'Défaussez'],
@@ -677,6 +733,7 @@ const staticReplacements = new Map([
     ['shroud value', 'valeur occulte'],
     ['shroud', 'valeur occulte'],
     ['Hidden', 'Cachée'],
+    ['enemies', 'ennemis'],
     ['enemy', 'ennemi'],
     ['Aloof', 'Distant'],
     ['aloof', 'Distant'],
@@ -687,6 +744,7 @@ const staticReplacements = new Map([
     ['Agenda', 'Intrigue'],
     ['agenda', 'intrigue'],
     ['Act deck', 'deck Acte'],
+    ['act deck', 'deck Acte'],
     ['Act', 'Acte'],
     ['act ', 'acte '],
     ['threat area', `zone de menace`],
@@ -698,10 +756,12 @@ const staticReplacements = new Map([
     ['locations', 'lieux'],
     ['location', 'lieu'],
     ['undefeated', 'non-vaincu'],
+    ['Abilities', `Les capacités`],
 
     ['<b>Forced</b>', '<b>Forcé</b>'],
     ['<b>Spawn</b>', '<b>Génération</b>'],
     ['Resign', 'Abandon'],
+    ['spawns', 'génère'],
     ['spawn', 'générez'],
     ['Spawn', 'Générez'],
     ['<b>Prey</b>', '<b>Proie</b>'],
@@ -734,10 +794,20 @@ const staticReplacements = new Map([
     ['event', 'événement'],
     ['damage', 'dégât'],
     ['horror', 'horreur'],
+    ['ready, unengaged', `redressé et non-engagé`],
+    ['ready', `redressé`],
+    ['exhausted', `incliné`],
+    ['unengaged', `non-engagé`],
+    ['non-permanent', `non-Permanent`],
+    ['by this effect', 'par cet effet'],
+    ['effect', 'effet'],
+    ['difficulty', 'difficulté'],
+    ['→R', '→C'],
 
     // generic words
     ['if able', 'si possible'],
     ['Flip this card', 'Retournez cette carte'],
+    ['runs out of', 'tombe à court de'],
     ['its revealed side', 'sa face révélée'],
     ['You must', 'Vous devez'],
     ['you must', 'vous devez'],
@@ -751,13 +821,17 @@ const staticReplacements = new Map([
     ['When ', 'Quand '],
     ['After ', 'Après '],
     ['underneath', 'sous'],
+    [', to advance', ' pour avancer'],
+    ['to advance', 'pour avancer'],
     ['advance', 'avancez'],
     ['adjacent to', 'adjacent à'],
     [' on it', ' dessus'],
+    ['Flip it over', `Retournez-la`],
     ['Flip back', 'Retournez'],
     ['Flip', 'Retournez'],
     ['flip back', 'retournez'],
     ['flip', 'retournez'],
+    ['immediately', 'immédiatement'],
     ['attached', 'attaché'],
     ['Attach ', 'Attachez '],
     ['she gains', 'elle gagne'],
