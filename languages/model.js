@@ -9,7 +9,8 @@ export const sameTranslationTraits = new Set([
     'Arkham',
 ])
 
-const traitTranslation = new Map([
+// trait translation from English to target language
+export const traitTranslation = new Map([
     
 ])
 
@@ -23,10 +24,6 @@ export const sameTranslationFlavor = new Set([
     'Negotium perambulans in tenebris...',
 ])
 
-
-const staticReplacements = new Map([
-
-])
 
 const replacementFunctions = [
     // @ts-ignore
@@ -44,14 +41,22 @@ const replacementFunctions = [
 ]
 
 
+const staticReplacements = new Map([
+
+])
+
+
+
+
 
 /**
  * 
  * @param {Card} referenceCard 
  * @param {Card} translationCard 
  * @param {TranslatableProperty} property
+ * @param {Map<string, string>} [nameTranslations] translation of cards names in case referenceCard references other cards
  */
-function suggestTextTranslation(referenceCard, translationCard, property){
+function suggestTextTranslation(referenceCard, translationCard, property, nameTranslations = new Map()){
     const referenceText = referenceCard[property]
 
     if(!referenceText){
@@ -59,6 +64,11 @@ function suggestTextTranslation(referenceCard, translationCard, property){
     }
 
     let suggestedText = referenceText
+    
+    for(const [referenceName, translatedName] of nameTranslations){
+        suggestedText = suggestedText.replaceAll(referenceName, translatedName)
+    }
+    
     for(const replacementFunction of replacementFunctions){
         suggestedText = replacementFunction(suggestedText, referenceCard, translationCard)
     }
@@ -76,8 +86,9 @@ function suggestTextTranslation(referenceCard, translationCard, property){
  * @param {Card} referenceCard 
  * @param {Card} translationCard 
  * @param {TranslatableProperty} property 
+ * @param {Map<string, string>} [nameTranslations] translation of cards names in case referenceCard references other cards
  */
-export function suggestTranslation(referenceCard, translationCard, property){
+export function suggestTranslation(referenceCard, translationCard, property, nameTranslations){
     if(property === 'name' || property === 'back_name' || property === 'flavor' || property === 'back_flavor'){
         return undefined
     }
@@ -87,6 +98,6 @@ export function suggestTranslation(referenceCard, translationCard, property){
     }
 
     if(property === 'text' || property === 'back_text'){
-        return suggestTextTranslation(referenceCard, translationCard, property)
+        return suggestTextTranslation(referenceCard, translationCard, property, nameTranslations)
     }
 }

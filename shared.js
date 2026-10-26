@@ -65,6 +65,38 @@ function areTraitsTranslated(referenceTraitsString, translationTraitsString, sam
 
 
 /**
+ * works for name and back_name
+ * @param {Card} referenceCard
+ * @param {string} referenceCardName
+ * @param {string | undefined} translatedCardName
+ * @param {Set<string>} sameTranslationNames 
+ */
+function isNameTranslated(referenceCard, referenceCardName, translatedCardName, sameTranslationNames){
+    const referenceCardTraits = referenceCard.traits ? parseTraits(referenceCard.traits) : [];
+
+    if(
+        referenceCard.type_code === 'investigator' || 
+        (referenceCard.type_code === 'asset' && (referenceCardTraits.includes('Ally') || referenceCardTraits.includes('Humanoid') || referenceCardTraits.includes('Bystander') || referenceCardTraits.includes('Cultist')) && referenceCard.is_unique) || 
+        (referenceCard.type_code === 'enemy' && referenceCard.is_unique)
+    ){
+        // names of unique people/enemies aren't translated, so already translated
+        return true
+    }
+    else{
+        if(translatedCardName === referenceCardName && !sameTranslationNames.has(translatedCardName)){
+            // if the texts are the same and not supposed to, then the translation is missing
+            return false
+        }
+        else{
+            // otherwise, it is considered translated
+            return true
+        }
+    }
+}
+
+
+
+/**
  * This is meant to be an approximation
  * 
  * @param {Card} translationCard 
@@ -82,7 +114,7 @@ export function findMissingTranslations(translationCard, referenceCard, language
         const referenceText = referenceCard[prop];
         const translationText = translationCard[prop];
 
-        if(referenceText && referenceText.length >= 1){ // is there something to translate?
+        if(referenceText && referenceText.length >= 1 && /\w/.test(referenceText)){ // is there something to translate?
 
             if(prop === 'traits'){
                 if(!areTraitsTranslated(referenceText, translationText || '', languageModule.sameTranslationTraits)){
@@ -95,25 +127,13 @@ export function findMissingTranslations(translationCard, referenceCard, language
             }
             else{
                 if(prop === 'name' || prop === 'back_name'){
-                    const referenceCardTraits = referenceCard.traits ? parseTraits(referenceCard.traits) : [];
-
-                    if(
-                        referenceCard.type_code === 'investigator' || 
-                        (referenceCard.type_code === 'asset' && (referenceCardTraits.includes('Ally') || referenceCardTraits.includes('Humanoid') || referenceCardTraits.includes('Bystander') || referenceCardTraits.includes('Cultist')) && referenceCard.is_unique) || 
-                        (referenceCard.type_code === 'enemy' && referenceCard.is_unique)
-                    ){
-                        // names of unique people/enemies aren't translated
+                    if(!isNameTranslated(referenceCard, referenceText, translationText, languageModule.sameTranslationNames)){
+                        missingTranslations.push({
+                            referenceCard,
+                            translationCard,
+                            property: prop
+                        })
                     }
-                    else{
-                        if(translationText === referenceText && !languageModule.sameTranslationNames.has(translationText)){
-                            missingTranslations.push({
-                                referenceCard,
-                                translationCard,
-                                property: prop
-                            })
-                        }
-                    }
-
                 }
                 else{
                     if(prop === 'flavor'){
@@ -155,9 +175,6 @@ export function findMissingTranslations(translationCard, referenceCard, language
 
 
 
-
-
-
 /**
  * 
  * @param {string} arkhamDataRootDir 
@@ -176,14 +193,11 @@ export function getLanguageList(arkhamDataRootDir){
  * @param {string} pack 
  * @param {string} file 
  * @param {string} language 
- * @param {LanguageModule} languageModule 
  * @returns 
  */
-export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language, languageModule){
+export async function getReferenceAndTranslationCards(arkhamDataRootDir, pack, file, language){
     const referenceFilepath = join(arkhamDataRootDir, packsDir, pack, file)
-
-    const translationPackDirectory = join(arkhamDataRootDir, translationDir, language, packsDir, pack)
-    const translationFilepath = join(translationPackDirectory, file)
+    const translationFilepath = join(arkhamDataRootDir, translationDir, language, packsDir, pack, file)
 
     return Promise.all([
         readFile(referenceFilepath, 'utf-8'),
@@ -193,7 +207,25 @@ export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language
         const referenceCards = JSON.parse(referenceString)
         /** @type {Card[]} */
         const translationCards = JSON.parse(translationString)
-        
+        return {referenceCards, translationCards, translationFilepath}
+    })
+}
+
+
+
+/**
+ * 
+ * 
+ * @param {string} arkhamDataRootDir 
+ * @param {string} pack 
+ * @param {string} file 
+ * @param {string} language 
+ * @param {LanguageModule} languageModule 
+ */
+export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language, languageModule){
+
+    return getReferenceAndTranslationCards(arkhamDataRootDir, pack, file, language)
+    .then(({referenceCards, translationCards}) => {
         /** @type {ReturnType<findMissingTranslations>} */
         let missingTranslations = [];
         for(const referenceCard of referenceCards){
@@ -204,6 +236,8 @@ export function getUntranslatedCardsList(arkhamDataRootDir, pack, file, language
                 const translationCard = translationCards.find(({code: code2}) => referenceCard.code === code2)
 
                 if(!translationCard){
+                    const referenceFilepath = join(arkhamDataRootDir, packsDir, pack, file)
+
                     console.error(`❌ Missing translated card for ${referenceFilepath} code ${referenceCard.code}`)
                 }
                 else{
@@ -239,15 +273,8 @@ export function getCardMissingTranslationsList(arkhamDataRootDir, pack, file, ca
     const referenceFilepath = join(arkhamDataRootDir, packsDir, pack, file)
     const translationFilepath = join(arkhamDataRootDir, translationDir, language, packsDir, pack, file)
 
-    return Promise.all([
-        readFile(referenceFilepath, 'utf-8'),
-        readFile(translationFilepath, 'utf-8')
-    ]).then(([referenceString, translationString]) => {
-        /** @type {Card[]} */
-        const referenceCards = JSON.parse(referenceString)
-        /** @type {Card[]} */
-        const translationCards = JSON.parse(translationString)
-
+    return getReferenceAndTranslationCards(arkhamDataRootDir, pack, file, language)
+    .then(({referenceCards, translationCards}) => {
         const referenceCard = referenceCards.find(({code}) => code === cardCode)
         const translationCard = translationCards.find(({code}) => code === cardCode)
 
@@ -260,6 +287,36 @@ export function getCardMissingTranslationsList(arkhamDataRootDir, pack, file, ca
 
         return findMissingTranslations(translationCard, referenceCard, languageModule)
     })  
+}
+
+/**
+ * 
+ * @param {Card[]} referenceCards 
+ * @param {Card[]} translationCards 
+ * @param {Set<string>} sameTranslationNames 
+ */
+export function getPackFileNameTranslations(referenceCards, translationCards, sameTranslationNames){
+    const translationMap = new Map()
+
+    for(const referenceCard of referenceCards){
+        const {code, name, back_name} = referenceCard
+
+        // for-of + find is O(n²), but n is usually in the 100s, so that's ok
+        const translationCard = translationCards.find(({code: code2}) => code === code2)
+
+        if(!translationCard){
+            throw new Error(`No translation card for ${code}`)
+        }
+
+        if(name && isNameTranslated(referenceCard, name, translationCard.name, sameTranslationNames)){
+            translationMap.set(name, translationCard.name)
+        }
+        if(back_name && isNameTranslated(referenceCard, back_name, translationCard.back_name, sameTranslationNames)){
+            translationMap.set(back_name, translationCard.back_name)
+        }
+    }
+
+    return translationMap
 }
 
 

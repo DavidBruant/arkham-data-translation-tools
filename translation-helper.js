@@ -2,16 +2,17 @@
 
 //@ts-check
 
-import { styleText } from 'node:util'
+import { styleText, parseArgs } from 'node:util'
 import {join} from 'node:path'
 import {stat} from 'node:fs/promises'
 
-import minimist from 'minimist'
 
 import { 
     getCardMissingTranslationsList, getLanguageList, getPackFileList, getReferencePackList, getUntranslatedCardsList, 
-    packsDir, translationDir, translatableProperties,
-    importLanguageModule
+    packsDir, translationDir,
+    importLanguageModule,
+    getReferenceAndTranslationCards,
+    getPackFileNameTranslations
 } from './shared.js'
 import { suggestTranslation } from './languages/fr.js'
 
@@ -45,20 +46,32 @@ catch(e){
     process.exit(1)
 }
 
+const options = /** @type {const} */ ({
+    language: {
+        type: 'string',
+        short: 'l',
+    },
+    pack: {
+        type: 'string'
+    },
+    file: {
+        type: 'string',
+        short: 'f'
+    },
+    card: {
+        type: 'string',
+        short: 'c'
+    },
+    property: {
+        type: 'string',
+        short: 'p'
+    },
+})
 
-const argv = minimist(process.argv.slice(2));
+/** @type { {values: {language?: string, pack?: string, file?: string, card? : string, property?: TranslatableProperty}} } */
+// @ts-ignore
+const { values : {language, pack, file, card, property} } = parseArgs({ options });
 
-const { 
-    language, 
-    pack, 
-    file, 
-} = argv
-
-/** @type {TranslatableProperty | undefined} */
-const property = argv.property;
-
-// card may be parsed as a number. It'll be correct later
-let {card} = argv
 
 if(!language){
     console.info(`Choose a language with '--language <language>'`)
@@ -125,6 +138,8 @@ catch(e){
     process.exit(1)
 }
 
+const {referenceCards, translationCards} = await getReferenceAndTranslationCards(arkhamDataRoot, pack, file, language)
+
 
 if(!card){    
     const missingTranslations = await getUntranslatedCardsList(arkhamDataRoot, pack, file, language, languageModule)
@@ -142,43 +157,41 @@ if(!card){
     process.exit()
 }
 
-// fix card if it was parsed as a number
-if(typeof card === 'number'){
-    const str = card.toString(10)
-    if(str.length >= 5){
-        card = str
-    }
-    else{
-        card = str.padStart(5, '0')
-    }
-}
-
 
 const missingTranslations = await getCardMissingTranslationsList(arkhamDataRoot, pack, file, card, language, languageModule)
 
 if(!property){
-    console.info(`Choose a property to translate with '--property <property>'`)
-    
     const missingTranslationProperties = missingTranslations.map(({property}) => property);
 
-    console.info('Choices: ', [...missingTranslationProperties].join(' | '))
+    if(missingTranslationProperties.length === 0){
+        console.info('Everything is already translated')
+    }
+    else{
+        console.info(`Choose a property to translate with '--property <property>'`)
+        console.info('Choices: ', [...missingTranslationProperties].join(' | '))
+    }
 
     process.exit()
 }
 
+const packFileNameTranslations = getPackFileNameTranslations(referenceCards, translationCards, languageModule.sameTranslationNames)
+
 const missingTranslation = missingTranslations.find(({property: prop}) => property === prop)
 
 if(!missingTranslation){
-    throw new TypeError(`No missing translation for card ${card}, property '${property}'`)
+    console.info(`No missing translation for card ${card}, property '${property}'`)
+}
+else{
+    console.info('Transation of card', language, pack, file, card, property)
+
+    console.info(styleText(['bold', 'green'], 'Original text:\n'), missingTranslation.referenceCard[property])
+    console.info(styleText(['bold', 'green'], 'Translated text:\n'), missingTranslation.translationCard[property])
+
+    const suggestedTranslation = suggestTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property, packFileNameTranslations)
+
+    if(suggestedTranslation){
+        console.info(styleText(['bold', 'blue'], 'Suggested translation:\n'), JSON.stringify(suggestedTranslation))
+    }
 }
 
-console.info('Transation of card', language, pack, file, card, property)
 
-console.info(styleText(['bold', 'green'], 'Original text:\n'), missingTranslation.referenceCard[property])
-console.info(styleText(['bold', 'green'], 'Translated text:\n'), missingTranslation.translationCard[property])
-
-const suggestedTranslation = suggestTranslation(missingTranslation?.referenceCard, missingTranslation?.translationCard, property)
-
-if(suggestedTranslation){
-    console.info(styleText(['bold', 'blue'], 'Suggested translation:\n'), JSON.stringify(suggestedTranslation))
-}
