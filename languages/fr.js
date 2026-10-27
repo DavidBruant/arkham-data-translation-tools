@@ -206,7 +206,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(the set-aside (.*) enemy)/i
+        const regExp = /(the set-aside (.*?) enemy)/i
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -218,7 +218,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Put (.*) into play)/i
+        const regExp = /(Put (.*?) into play)/i
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -230,7 +230,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(must spend (.*),? as a group)/
+        const regExp = /(must spend (.*?),? as a group)/
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -243,7 +243,7 @@ const replacementFunctions = [
     
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(spend (.*),? as a group)/
+        const regExp = /(spend (.*?),? as a group)/
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -255,7 +255,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Spend (.*) resource)/i
+        const regexp = /(Spend (.*?) resource)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -267,7 +267,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(lose (.*) resources)/i
+        const regexp = /(lose (.*?) resources)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -327,7 +327,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Heal (.*) horror)/i
+        const regexp = /(Heal (.*?) horror)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -339,7 +339,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(deals? (.*) damage to)/i
+        const regexp = /(deals? (.*?) damage to)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -351,7 +351,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(deals? (.*) damage)/i
+        const regexp = /(deals? (.*?) damage)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -363,7 +363,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(deals? (.*) horror to)/i
+        const regexp = /(deals? (.*?) horror to)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -375,7 +375,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(deals? (.*) horror)/i
+        const regexp = /(deals? (.*?) horror)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -387,7 +387,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(discard the top (.*) cards?)/i
+        const regexp = /(discard the top (.*?) cards?)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -399,7 +399,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(draw the topmost (.*) in the encounter discard pile)/i
+        const regexp = /(draw the topmost (.*?) in the encounter discard pile)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -411,7 +411,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Draw (.*) cards?)/i
+        const regexp = /(Draw (.*?) cards?)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -423,7 +423,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Lose (.*) actions?)/i
+        const regexp = /(Lose (.*?) actions?)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -447,11 +447,11 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Test (\[.*\] \(.*\)))/ig
+        const regExp = /(Test (\[.*?\] \(.*?\)))/ig
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
-            suggestedText = suggestedText.replace(match[1], `Effectuez un test de ${match[2]}`)
+            suggestedText = suggestedText.replace(match[1], `effectuez un test de ${match[2]}`)
         }
 
         return suggestedText
@@ -484,7 +484,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Remove (.*) from the game)/g
+        const regExp = /(Remove (.*?) from the game)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -498,7 +498,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Set (.*) aside, out of play)/g
+        const regExp = /(Set (.*?) aside, out of play)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -512,7 +512,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(put (.*) into play)/g
+        const regExp = /(put (.*?) into play)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -526,7 +526,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(while it is at a (.*) location)/g
+        const regExp = /(while it is at a (.*?) location)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -540,7 +540,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(empty (.*)location)/g
+        const regExp = /(empty (.*?)location)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -891,12 +891,14 @@ const staticReplacements = new Map([
     ['unengaged', `non-engagé`],
     ['non-permanent', `non-Permanent`],
     ['by this effect', 'par cet effet'],
-    ['effect', 'effet'],
+    ['effect ', 'effet '],
+    ['effects ', 'effets '],
     ['difficulty', 'difficulté'],
     ['story', 'Histoire'],
     ['→R', '→C'],
 
     // generic words
+    ['If there are no', `S'il n'y a pas de`],
     ['if able', 'si possible'],
     ['runs out of', 'tombe à court de'],
     ['its revealed side', 'sa face révélée'],
@@ -956,6 +958,7 @@ const staticReplacements = new Map([
     ['otherwise', 'sinon'],
     ['If you have', 'Si vous avez'],
     ['you perform', 'vous effectuez'],
+    ['For each', 'Pour chaque'],
     ['for each', 'pour chaque'],
     ['each', 'chaque'],
     ['it is', `c'est`],
