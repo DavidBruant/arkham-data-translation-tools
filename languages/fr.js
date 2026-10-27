@@ -47,6 +47,15 @@ export const sameTranslationTraits = new Set([
     'Service',
     'Spectral',
 
+    // tfa
+    'Serpent',
+
+    // eoe
+    'Entrepreneur',
+
+    // fhv
+    'Double',
+
     // side
     'Bayou',
     'Dhole',
@@ -145,11 +154,40 @@ export const sameTranslationNames = new Set([
     'Corrosion',
     'Mano a Mano',
 
+    //tfa
+    'Persuasion',
+    'Sacrifice',
+    'Coup de Grâce',
+    'Thermos',
+
     // tcu
     'Terrible Secret',
     'Baron Samedi',
     'De Vermis Mysteriis',
     'Eucatastrophe',
+
+    // tde
+    'Versatile',
+
+    // tic
+    'Armageddon',
+    'Ríastrad',
+    'Signum Crucis',
+
+    // eoe
+    `Livre d'Eibon`,
+    'Discipline',
+    'Prophesiae Profana',
+    'Bandages',
+
+    // fhv
+    'Ad Hoc',
+    'Katana',
+    'Ofuda',
+    'Absolution',
+    'Microscope',
+    'British Bull Dog',
+    'Vamp',
 
     // side
     'Garden District',
