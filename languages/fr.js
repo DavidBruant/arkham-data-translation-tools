@@ -161,6 +161,7 @@ export const sameTranslationNames = new Set([
     'Pantalone',
     // machinations
     'Tindalos',
+    'Tindalos Alpha',
     'Thomas Corrigan',
     'Mary Zielinski',
 
