@@ -62,7 +62,9 @@ export const sameTranslationTraits = new Set([
     'Gug',
     'Machination',
     'Tindalos',
-
+    'Innocent',
+    'Hall',
+    'Mi-Go',
 ])
 
 export const traitTranslation = new Map([
@@ -212,6 +214,8 @@ export const sameTranslationNames = new Set([
     'Tindalos Alpha',
     'Thomas Corrigan',
     'Mary Zielinski',
+    // hotel
+    'Restaurant',
 
 ])
 
