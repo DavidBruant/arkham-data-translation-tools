@@ -55,6 +55,7 @@ export const sameTranslationTraits = new Set([
 
     // fhv
     'Double',
+    'Hemlock Vale',
 
     // side
     'Bayou',
@@ -192,6 +193,21 @@ export const sameTranslationNames = new Set([
     'Microscope',
     'British Bull Dog',
     'Vamp',
+    'Hemlock House',
+    'Akwan',
+    'Incursion',
+    'Ex Nihilo',
+    'Ad Nihilum',
+    'Sublimation',
+    'Fragmentation',
+    'Leah Atwood',
+    'Simeon Atwood',
+    'William Hemlock',
+    'River Hawthorne',
+    'Gideon Mizrah',
+    'Judith Park',
+    'Theo Peters',
+    'Calcification',
 
     // tdc
     'Ocula Obscura',
