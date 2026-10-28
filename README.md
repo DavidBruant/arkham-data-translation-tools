@@ -30,7 +30,7 @@ translation-status --language fr --pack tpc --file tpm_encounter.json
 
 ## Getting help for translation
 
-⚠️ super-experimental - only sort of works in French for now ⚠️
+⚠️ experimental - only sort of works in French for now ⚠️
 
 ```sh
 node --env-file=.env translation-helper.js
@@ -41,6 +41,23 @@ node --env-file=.env translation-helper.js --language fr --pack ptc --file tpm_e
 
 
 
+## File-wide automatic trait translation
 
+⚠️ experimental - only sort of works in French for now ⚠️
+
+```sh
+node --env-file=.env translate-traits.js --language fr --pack return --file rttcu_encounter.json
+```
+
+
+
+
+## Automatic 
+
+⚠️ experimental - only sort of works in French for now ⚠️
+
+```sh
+node --env-file=.env uniformize-french-punctuations.js --pack core --file core.json
+```
 
  
