@@ -189,6 +189,16 @@ export const sameTranslationNames = new Set([
     'British Bull Dog',
     'Vamp',
 
+    // tdc
+    'Ocula Obscura',
+    'Confiscation',
+    'Oculus Mortuum',
+    'Antikythera',
+    'Luger P08',
+    'Intimidation',
+    'Doppelgänger',
+    'Mauser Tankgewehr M1918',
+
     // side
     'Garden District',
     'Broadmoor',
