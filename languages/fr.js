@@ -60,6 +60,8 @@ export const sameTranslationTraits = new Set([
     'Bayou',
     'Dhole',
     'Gug',
+    'Prison',
+    'Distorsion',
     'Machination',
     'Tindalos',
     'Innocent',
