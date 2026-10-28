@@ -3,7 +3,7 @@
 const filled = '█';
 const empty = '░';
 
-const BAR_CHARACTER_COUNT = 16;
+const BAR_CHARACTER_COUNT = 20;
 
 /**
  * @param {number} value

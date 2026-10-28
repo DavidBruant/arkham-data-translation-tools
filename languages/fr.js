@@ -47,6 +47,15 @@ export const sameTranslationTraits = new Set([
     'Service',
     'Spectral',
 
+    // tfa
+    'Serpent',
+
+    // eoe
+    'Entrepreneur',
+
+    // fhv
+    'Double',
+
     // side
     'Bayou',
     'Dhole',
@@ -79,7 +88,7 @@ export const traitTranslation = new Map([
     [`Syndicate`, `Syndicat`],
     [`Ancient One`, `Grand Ancien`],
     [`Monster`, `Monstre`],
-    [`Extradimensional`, `Extradimensionel`],
+    [`Extradimensional`, `Extradimensionnel`],
     [`Hex`, `Sortilège`],
     [`Scheme`, `Manigance`],
     [`Hazard`, `Risque`],
@@ -145,11 +154,50 @@ export const sameTranslationNames = new Set([
     'Corrosion',
     'Mano a Mano',
 
+    //tfa
+    'Persuasion',
+    'Sacrifice',
+    'Coup de Grâce',
+    'Thermos',
+
     // tcu
     'Terrible Secret',
     'Baron Samedi',
     'De Vermis Mysteriis',
     'Eucatastrophe',
+
+    // tde
+    'Versatile',
+
+    // tic
+    'Armageddon',
+    'Ríastrad',
+    'Signum Crucis',
+
+    // eoe
+    `Livre d'Eibon`,
+    'Discipline',
+    'Prophesiae Profana',
+    'Bandages',
+
+    // fhv
+    'Ad Hoc',
+    'Katana',
+    'Ofuda',
+    'Absolution',
+    'Microscope',
+    'British Bull Dog',
+    'Vamp',
+
+    // tdc
+    'Ocula Obscura',
+    'Confiscation',
+    'Oculus Mortuum',
+    'Antikythera',
+    'Luger P08',
+    'Intimidation',
+    'Doppelgänger',
+    'Mauser Tankgewehr M1918',
 
     // side
     'Garden District',
@@ -159,6 +207,11 @@ export const sameTranslationNames = new Set([
     'Bauta',
     'Medico Della Peste',
     'Pantalone',
+    // machinations
+    'Tindalos',
+    'Tindalos Alpha',
+    'Thomas Corrigan',
+    'Mary Zielinski',
 
 ])
 
@@ -202,7 +255,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(the set-aside (.*) enemy)/i
+        const regExp = /(the set-aside (.*?) enemy)/i
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -214,7 +267,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Put (.*) into play)/i
+        const regExp = /(Put (.*?) into play)/i
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -226,7 +279,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(must spend (.*), as a group)/
+        const regExp = /(must spend (.*?),? as a group)/
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -239,7 +292,7 @@ const replacementFunctions = [
     
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(spend (.*), as a group)/
+        const regExp = /(spend (.*?),? as a group)/
         const matches = suggestedText.match(regExp)
 
         if(matches){
@@ -251,7 +304,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Spend (.*) resource)/i
+        const regexp = /(Spend (.*?) resource)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -263,7 +316,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(lose (.*) resources)/i
+        const regexp = /(lose (.*?) resources)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -323,7 +376,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Heal (.*) horror)/i
+        const regexp = /(Heal (.*?) horror)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -335,7 +388,19 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(deals? (.*) damage)/i
+        const regexp = /(deals? (.*?) damage to)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `infligez ${matches[2]} dégât${matches[2] !== '1' ? 's' : ''} à`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(deals? (.*?) damage)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -347,7 +412,31 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(discard the top (.*) cards?)/i
+        const regexp = /(deals? (.*?) horror to)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `infligez ${matches[2]} horreur${matches[2] !== '1' ? 's' : ''} à`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(deals? (.*?) horror)/i
+        const matches = suggestedText.match(regexp)
+
+        if(matches){
+            return suggestedText.replace(matches[1], `infligez ${matches[2]} horreur${matches[2] !== '1' ? 's' : ''}`)
+        }
+        else{
+            return suggestedText
+        }
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regexp = /(discard the top (.*?) cards?)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -359,7 +448,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(draw the topmost (.*) in the encounter discard pile)/i
+        const regexp = /(draw the topmost (.*?) in the encounter discard pile)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -371,7 +460,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Draw (.*) cards?)/i
+        const regexp = /(Draw (.*?) cards?)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -383,7 +472,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regexp = /(Lose (.*) actions?)/i
+        const regexp = /(Lose (.*?) actions?)/i
         const matches = suggestedText.match(regexp)
 
         if(matches){
@@ -407,11 +496,11 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Test (\[.*\] \(.*\)))/ig
+        const regExp = /(Test (\[.*?\] \(.*?\)))/ig
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
-            suggestedText = suggestedText.replace(match[1], `Effectuez un test de ${match[2]}`)
+            suggestedText = suggestedText.replace(match[1], `effectuez un test de ${match[2]}`)
         }
 
         return suggestedText
@@ -444,7 +533,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Remove (.*) from the game)/g
+        const regExp = /(Remove (.*?) from the game)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -458,7 +547,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(Set (.*) aside, out of play)/g
+        const regExp = /(Set (.*?) aside, out of play)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -472,7 +561,7 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(put (.*) into play)/g
+        const regExp = /(put (.*?) into play)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -486,7 +575,21 @@ const replacementFunctions = [
     },
     // @ts-ignore
     (suggestedText, referenceCard, translationCard) => {
-        const regExp = /(empty (.*)location)/g
+        const regExp = /(while it is at a (.*?) location)/g
+        const matches = suggestedText.matchAll(regExp)
+
+        for(const match of matches){
+            suggestedText = suggestedText.replace(
+                match[1], 
+                `tant qu'il est dans un lieu ${match[2]}`
+            )
+        }
+
+        return suggestedText
+    },
+    // @ts-ignore
+    (suggestedText, referenceCard, translationCard) => {
+        const regExp = /(empty (.*?)location)/g
         const matches = suggestedText.matchAll(regExp)
 
         for(const match of matches){
@@ -526,11 +629,6 @@ const replacementFunctions = [
 
 
 const staticReplacements = new Map([
-
-    [
-        `Shuffle the encounter discard pile into the encounter deck.`, 
-        `mélangez la pile de défausse Rencontre dans le deck Rencontre.`
-    ],
     
     // moving
     ['cancel the effects of the move', 'annulez ce déplacement'],
@@ -586,6 +684,7 @@ const staticReplacements = new Map([
     ['Group limit once per round', `Limite collective d'une fois par round`],
     ['Group limit once per turn', `Limite collective d'une fois par tour`],
     ['Limit 1 per investigator.', `Limite de 1 par investigateur.`],
+    ['Limit once per turn', `Limite d'une fois par tour`],
     ['Limit once per round', `Limite d'une fois par round`],
     ['Limit 1 per location', 'Limite de 1 par lieu'],
     ['Limit 1 per asset', 'Limite 1 par soutien'],
@@ -601,6 +700,8 @@ const staticReplacements = new Map([
         'son lieu est à la fois connexe au lieu situé dans le sens antihoraire et au lieu dans le sens horaire'
     ],
     ['"Missing Persons" section of your Campaign Log', 'section "Personnes disparues" du Carnet de Campagne'],
+    ['Announce', 'annoncez que'],
+    ['Catacombs deck', 'deck Catacombes'],
 
     // return
     ['with the following exceptions', 'en tenant compte des exceptions suivantes'],
@@ -619,34 +720,62 @@ const staticReplacements = new Map([
         `This card does not count toward that investigator's deck size.`, 
         'Cette carte ne compte pas dans la Taille du deck de cet investigateur'
     ], 
+    
+
+    // location
+    ['while investigating this location', 'pendant que vous enquétiez dans ce lieu'],
+    ['When you investigate this location', 'Quand vous enquêtez dans ce lieu'],
+    ['enters a location', 'entre dans un lieu'],
+    ['After you successfully investigate', 'Après avoir enquêté avec succès'],
+    ['Attach to your location', 'Attachez cette carte à votre lieu'],
+    ['look at the revealed side', 'regardez la face révélée'],
+    ['Attached location gets', 'Le lieu attaché gagne'],
+    ['attached location', 'le lieu attaché'],
+    ['unrevealed locations', 'lieux non-révélés'],
+    ['unrevealed location', 'lieu non-révélé'],
+    ['nearest location', `lieu le plus proche`],
+    ['at any location', `dans n'importe quel lieu`],
+    ['at that location', `dans ce lieu`],
+    ['at its location', `dans son lieu`],
+    ['at your location', `dans votre lieu`],
+    ['at this location', 'dans ce lieu'],
+    ['of your location', 'de votre lieu'],
+    ['to your location', `vers votre lieu`],
+    ['from this location', 'de ce lieu'],
+    ['this location', 'ce lieu'],
+
+    // deck
+    [
+        `Shuffle the encounter discard pile into the encounter deck.`, 
+        `mélangez la pile de défausse Rencontre dans le deck Rencontre.`
+    ],
+    ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
+    ['the top card of the encounter deck', 'la carte du dessus du deck Rencontre'],
+    ['from the top of the encounter deck', 'du dessus du deck Rencontre'],
+    ['next to the agenda deck', `à coté du deck Intrigue`],
+    ['from the top of your deck', 'du dessus de votre deck'],
+    ['the top card of your deck', 'la carte du dessus de votre deck'],
+    ['Act deck', 'deck Acte'],
+    ['act deck', 'deck Acte'],
+    ['Agenda deck', 'deck Intrigue'],
+    ['agenda deck', 'deck Intrigue'],
+    ['encounter deck', 'deck Rencontre'],
+    ['of your deck', 'de votre deck'],
+    ['into your deck', 'dans votre deck'],
+
+    // Arkham LCG concepts / rule words
     ['While you are investigating', 'Tant que vous enquêtez'],
-    ['Catacombs deck', 'deck Catacombes'],
     ['Ignore the text', 'Ignorez le texte'],
     ['the skill indicated by the investigation attempt', `la compétence indiquée lors de la tentative d'enquête`],
     ['You must (choose one)', 'Vous devez (choisir une option)'],
     ['For the duration of this scenario', 'Pour la durée du scénario'],
-
-    // location
-    ['unrevealed locations', 'lieux non-révélés'],
-    ['unrevealed location', 'lieu non-révélé'],
-    ['at any location', `dans n'importe quel lieu`],
-    ['at that location', `dans ce lieu`],
-    ['look at the revealed side', 'regardez la face révélée'],
-    ['Attach to your location', 'Attachez cette carte à votre lieu'],
-    ['Attached location gets', 'Le lieu attaché gagne'],
-    ['attached location', 'le lieu attaché'],
-    ['When you investigate this location', 'Quand vous enquêtez dans ce lieu'],
-    ['After you successfully investigate', 'Après avoir enquêté avec succès'],
-    ['while investigating this location', 'pendant que vous enquétiez dans ce lieu'],
-    ['of your location', 'de votre lieu'],
-
-    // Arkham LCG concepts / rule words
     ['investigators may', `les investigateurs ont le droit de`],
     ['Secretly add this card to your hand', 'Ajoutez secrètement cette carte à votre main'],
     ['is immune to player card effects', 'est immunisé contre les effets de cartes Joueur'],
     ['while checking your hand size', 'pendant la vérification de votre limite de main'], 
     ['Reveal a random token from the chaos bag', 'révélez un pion pris au hasard dans la réserve du Chaos'],
     ['reveal a random token from the chaos bag', 'révélez un pion pris au hasard dans la réserve du Chaos'],
+    ['This action does not provoke attacks of opportunity', `Cette action ne provoque pas d'attaques d'opportunité`],
     ['While resolving the hunter keyword', 'Tant que vous résolvez le mot-clé Chasseur'],
     ['Check Campaign Log', 'Vérifiez votre Carnet de Campagne'],
     ['Record in your Campaign Log', `Indiquez dans votre Carnet de Campagne`],
@@ -654,6 +783,8 @@ const staticReplacements = new Map([
     ['Campaign Log', `Carnet de Campagne`],
     ['The lead investigator', `L'investigateur principal`],
     ['the lead investigator', `l'investigateur principal`],
+    ['add it to the victory display', 'ajoutez-la à la pile de victoire'],
+    ['to the victory display', 'à la pile de victoire'],
     ['the victory display', 'la pile de victoire'],
     ['When you would draw', 'Quand vous devriez piocher'],
     ['Attach this card to', 'Attachez cette carte à'],
@@ -664,10 +795,6 @@ const staticReplacements = new Map([
     ['it gains surge', `elle gagne Renfort`],
     ['gains surge', `gagne Renfort`],
     ['gains peril', `gagne Péril`],
-    ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
-    ['the top card of the encounter deck', 'la carte du dessus du deck Rencontre'],
-    ['from the top of the encounter deck', 'du dessus du deck Rencontre'],
-    ['encounter deck', 'deck Rencontre'],
     ['encounter discard pile', 'pile de défausse Rencontre'],
     ['discard pile', 'pile de défausse'],
     ['a skill test', 'un test de compétence'],
@@ -687,14 +814,9 @@ const staticReplacements = new Map([
     ['automatically evade', 'échappez automatiquement'],
     ['on the current agenda', `sur l'intrigue en cours`],
     ['on this agenda', `sur cette intrigue`],
-    ['next to the agenda deck', `à coté du deck Intrigue`],
-    ['at this location', 'dans ce lieu'],
-    ['from this location', 'de ce lieu'],
-    ['this location', 'ce lieu'],
     ['farthest from you', 'le plus éloigné de vous'],
     ['After you discover', 'Après avoir découvert'],
-    ['from the top of your deck', 'du dessus de votre deck'],
-    ['the top card of your deck', 'la carte du dessus de votre deck'],
+    ['from the token pool', 'pris dans la réserve de pions'],
     ['the token pool', 'la réserve de pions'],
     ['the token bank', 'la réserve de pions'],
     ['is defeated', 'est vaincu'],
@@ -704,8 +826,8 @@ const staticReplacements = new Map([
     ['cannot take damage', 'ne peut pas subir de dégât'],
     ['Cannot be canceled', 'Ne peut pas être annulé'],
     ['cannot be canceled', 'ne peut pas être annulé'],
+    ['for the remainder of the game', 'pour le reste de la partie'],
     ['For the remainder of the scenario', 'Pour le reste du scénario'],
-    ['of your deck', 'de votre deck'],
     ['After you leave', 'Après avoir quitté'],
     ['play area', 'zone de jeu'],
     ['play action', 'action Jouer'],
@@ -713,18 +835,25 @@ const staticReplacements = new Map([
     ['draw action', 'action Piocher'],
     ['resource action', 'action Ressource'],
     ['during your turn', 'durant votre tour'],
+    ['your turn', 'votre tour'],
     ['if you did not perform', `si vous n'avez pas effectué`],
     ['in your hand', 'dans votre main'],
     ['from your hand', 'de votre main'],
     ['next skill test', 'prochain test de compétence'],
     ['skill test', 'test de compétence'],
+    ['from the chaos bag', 'de la réserve du Chaos'],
     ['In player order', `Dans l'ordre des joueurs`],
+    ['have been triggered', `ont été déclenchées`],
+    ['triggered', `déclenchées`],
+    ['trigger', `déclencher`],
     ['in play', 'en jeu'],
     ['this round', 'à ce round'],
     ['on any card', `sur n'importe quelle carte`],
     ['its revelation effect', `son effet Révélation`],
+    ['Epic Multiplayer Mode', `Mode Multijoueur Épique`],
     ['you control', 'que vous contrôlez'],
     ['proceed to', `continuez à`],
+    ['cannot be damaged', 'ne peut pas être blessé'],
 
     ['discarded', 'défaussé'],
     ['Discard', 'Défaussez'],
@@ -735,16 +864,11 @@ const staticReplacements = new Map([
     ['Hidden', 'Cachée'],
     ['enemies', 'ennemis'],
     ['enemy', 'ennemi'],
-    ['Aloof', 'Distant'],
-    ['aloof', 'Distant'],
     ['clue', 'indice'],
     ['+1 fight', '+1 combat'],
     ['+1 evade', '+1 évasion'],
-    ['Agenda deck', 'deck Intrigue'],
     ['Agenda', 'Intrigue'],
     ['agenda', 'intrigue'],
-    ['Act deck', 'deck Acte'],
-    ['act deck', 'deck Acte'],
     ['Act', 'Acte'],
     ['act ', 'acte '],
     ['threat area', `zone de menace`],
@@ -757,6 +881,7 @@ const staticReplacements = new Map([
     ['location', 'lieu'],
     ['undefeated', 'non-vaincu'],
     ['Abilities', `Les capacités`],
+    ['abilities', `les capacités`],
 
     ['<b>Forced</b>', '<b>Forcé</b>'],
     ['<b>Spawn</b>', '<b>Génération</b>'],
@@ -766,22 +891,33 @@ const staticReplacements = new Map([
     ['Spawn', 'Générez'],
     ['<b>Prey</b>', '<b>Proie</b>'],
     ['<b>Revelation</b>', '<b>Révélation</b>'],
-    ['<b>Parley.</b>', '<b>Discussion</b>'],
+    ['<b>Parley.</b>', '<b>Discussion</b>.'],
     ['<b>Objective</b>', '<b>Objectif</b>'],
     ['<b>Move</b>', '<b>Se Déplacer</b>'],
+    ['<b>Fight.</b>', '<b>Combattre</b>.'],
+    ['<b>Evade.</b>', '<b>Échapper à</b>.'],
+    ['<b>Setup</b>', '<b>Mise en Place</b>'],
     ['gains hunter', 'gagne Chasseur'],
     ['Hunter', 'Chasseur'],
+    ['Patrol', `Patrouille`],
     ['Massive', 'Massif'],
     ['Surge', 'Renfort'],
     ['Peril', 'Péril'],
     ['Retaliate', 'Riposte'],
+    ['retaliate', 'Riposte'],
+    ['Alert', 'Alerte'],
+    ['alert', 'Alerte'],
+    ['Aloof', 'Distant'],
+    ['aloof', 'Distant'],
     ['health', 'vie'],
     ['sanity', 'santé mentale'],
-    ['resources', 'ressources'],
+    ['resource', 'ressource'],
     [' doom', ' fatalité'],
     ['horror', 'horreur'],
     ['investigate ', 'enquêter '],
+    ['Fight', 'Combattre'],
     ['fight', 'combattre'],
+    ['Evade', 'Échapper à'],
     ['evade', 'échapper à'],
     [' move', ' se déplacer'],
     ['out of play', 'hors jeu'],
@@ -790,23 +926,29 @@ const staticReplacements = new Map([
     ['draws', 'pioche'],
     ['draw', 'pioche'],
     ['commit', 'attribuer'],
+    ['this card', 'cette carte'],
+    ['this story card', 'cette carte Histoire'],
     ['card', 'carte'],
     ['event', 'événement'],
     ['damage', 'dégât'],
     ['horror', 'horreur'],
     ['ready, unengaged', `redressé et non-engagé`],
+    ['Ready', `redressez`],
     ['ready', `redressé`],
     ['exhausted', `incliné`],
+    ['exhaust', `inclinez`],
     ['unengaged', `non-engagé`],
     ['non-permanent', `non-Permanent`],
     ['by this effect', 'par cet effet'],
-    ['effect', 'effet'],
+    ['effect ', 'effet '],
+    ['effects ', 'effets '],
     ['difficulty', 'difficulté'],
+    ['story', 'Histoire'],
     ['→R', '→C'],
 
     // generic words
+    ['If there are no', `S'il n'y a pas de`],
     ['if able', 'si possible'],
-    ['Flip this card', 'Retournez cette carte'],
     ['runs out of', 'tombe à court de'],
     ['its revealed side', 'sa face révélée'],
     ['You must', 'Vous devez'],
@@ -828,42 +970,54 @@ const staticReplacements = new Map([
     [' on it', ' dessus'],
     ['Flip it over', `Retournez-la`],
     ['Flip back', 'Retournez'],
-    ['Flip', 'Retournez'],
     ['flip back', 'retournez'],
+    ['Flip', 'Retournez'],
     ['flip', 'retournez'],
     ['immediately', 'immédiatement'],
     ['attached', 'attaché'],
     ['Attach ', 'Attachez '],
     ['she gains', 'elle gagne'],
     ['Gain', 'gagnez'],
+    ['gains', 'gagne'],
+    ['gain', 'gagnez'],
     ['Spend', 'Dépensez'],
     ['keyword', 'mot-clé'],
     ['replace it', 'remplacez-la'],
     ['copy', 'exemplaire'],
     ['copies', 'exemplaires'],
+    ['1 or more', 'au moins 1'],
+    ['or more', 'ou plus'],
     ['and/or', 'et/ou'],
     [' and ', ' et '],
     [' or ', ' ou '],
     ['the fewest', 'le moins de'],
-    ['1 or more', 'au moins 1'],
     ['at least', 'au moins'],
     [' with ', ' avec '],
     [' among ', ' parmi '],
     ['Shuffle', 'Mélangez'],
+    ['gets', 'gagne'],
     ['loses', 'perd'],
     ['lose', 'perdez'],
     ['Place', 'placez'],
+    ['Remove', 'Retirez'],
+    ['remove', 'retirez'],
+    [' add', ' ajoutez'],
     ['hand', 'main'],
     ['Otherwise', 'Sinon'],
     ['otherwise', 'sinon'],
     ['If you have', 'Si vous avez'],
     ['you perform', 'vous effectuez'],
+    ['For each', 'Pour chaque'],
+    ['for each', 'pour chaque'],
     ['each', 'chaque'],
+    ['it is', `c'est`],
     [' is ', ' est '],
     [' the ', ' le '],
-    [' you  ', ' vous '],
-    [' as if  ', ' comme si '],
-    [' if  ', ' si '],
+    [' you,', ' vous,'],
+    [' you ', ' vous '],
+    [' as if ', ' comme si '],
+    [' if ', ' si '],
+    ['If ', 'Si '],
 
 ])
 
