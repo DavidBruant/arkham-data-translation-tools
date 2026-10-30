@@ -193,6 +193,7 @@ export const sameTranslationNames = new Set([
     'Microscope',
     'British Bull Dog',
     'Vamp',
+    'Hold Up',
     'Hemlock House',
     'Akwan',
     'Incursion',
