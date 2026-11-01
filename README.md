@@ -52,7 +52,7 @@ node --env-file=.env translate-traits.js --language fr --pack return --file rttc
 
 
 
-## Automatic 
+## Automatic punctuations
 
 ⚠️ experimental - only sort of works in French for now ⚠️
 
