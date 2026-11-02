@@ -252,6 +252,9 @@ export const sameTranslationNames = new Set([
     // guardians
     'John & Jessie Burke',
 
+    // parallel
+    'Directive',
+
 ])
 
 // flavor texts that are exactly the same in French as in English
