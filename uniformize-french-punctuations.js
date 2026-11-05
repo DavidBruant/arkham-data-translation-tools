@@ -99,7 +99,10 @@ catch(e){
 }
 
 
-if(!file){
+if(file){
+    await uniformizeFilePunctuation(arkhamDataRoot, pack, file, language)
+}
+else{
     console.info(`Choose a file with '--file <file>'`)
     
     const packFiles = await getPackFileList(arkhamDataRoot, pack)
@@ -108,24 +111,8 @@ if(!file){
     process.exit()
 }
 
-// Verifying the corresponding translation file exists
-const translationFile = join(arkhamDataRoot, translationDir, language, packsDir, pack, file)
-
-try{
-    let _translationDirStat = await stat(translationFile)
-}
-catch(e){
-    // @ts-ignore
-    if(e.code === 'ENOENT'){
-        console.error(`❌ Translation file ${translationFile} does not exist`)
-    }
-    else{
-        console.error(`❌ Error trying to read ${translationFile}`, e)
-    }
-    process.exit(1)
-}
 
 
-await uniformizeFilePunctuation(arkhamDataRoot, pack, file, language)
 
-console.info(`✅ Typo uniformized for ${pack}/${file}`)
+
+

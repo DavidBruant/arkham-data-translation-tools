@@ -1,11 +1,12 @@
 //@ts-check
 
-import {writeFile} from 'node:fs/promises'
+import {stat, writeFile} from 'node:fs/promises'
+import {join} from 'node:path'
 
 import richtypo from 'richtypo';
 import {dashes, ellipses, punctuationMarks, quotes} from 'richtypo/rules/fr';
 
-import {getReferenceAndTranslationCards} from '../shared.js'
+import {getReferenceAndTranslationCards, packsDir, translationDir} from '../shared.js'
 
 
 /** @type {(keyof Card)[]} */
@@ -69,6 +70,26 @@ const rules = [
  */
 export default async function uniformizeFilePunctuation(arkhamDataRoot, pack, file, language){
 
+    // Verifying the corresponding translation file exists
+    const translationFile = join(arkhamDataRoot, translationDir, language, packsDir, pack, file)
+
+    try{
+        let _translationDirStat = await stat(translationFile)
+    }
+    catch(e){
+        // @ts-ignore
+        if(e.code === 'ENOENT'){
+            console.error(`❌ Translation file ${translationFile} does not exist`)
+        }
+        else{
+            console.error(`❌ Error trying to read ${translationFile}`, e)
+        }
+        console.error(`Try 'npm run update-locales ${language}' to synchronize language files`)
+
+        process.exit(1)
+    }
+
+
     const {translationCards, translationFilepath} = await getReferenceAndTranslationCards(arkhamDataRoot, pack, file, language);
 
     for(const card of translationCards){
@@ -84,6 +105,7 @@ export default async function uniformizeFilePunctuation(arkhamDataRoot, pack, fi
         }
     }
 
-
     await writeFile(translationFilepath, JSON.stringify(translationCards, null, 4))
+
+    console.info(`✅ Typo uniformized for ${pack}/${file}`)
 }
