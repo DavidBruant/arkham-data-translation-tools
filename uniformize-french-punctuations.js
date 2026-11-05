@@ -4,20 +4,19 @@
 
 import { styleText, parseArgs } from 'node:util'
 import {join} from 'node:path'
-import {stat, writeFile} from 'node:fs/promises'
+import {stat} from 'node:fs/promises'
 
-import richtypo from 'richtypo';
-import {dashes, ellipses, punctuationMarks, quotes} from 'richtypo/rules/fr';
 
 import { 
     getLanguageList, getPackFileList, getReferencePackList, 
-    packsDir, translationDir,
-    getReferenceAndTranslationCards
+    packsDir, translationDir
 } from './shared.js'
+import uniformizeFilePunctuation from './library/uniformiseFilePunctuation.js'
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
 const arkhamDataRoot = ARKHAM_DATA_ROOT || process.cwd()
+
 
 try{
     const rootStat = await stat(arkhamDataRoot)
@@ -127,75 +126,6 @@ catch(e){
 }
 
 
-const {translationCards, translationFilepath} = await getReferenceAndTranslationCards(arkhamDataRoot, pack, file, language);
-
-/** @type {(keyof Card)[]} */
-const typoFixableProps = ['name', 'back_name', 'text', 'back_text', 'flavor', 'back_flavor']
-
-const nbsp = '\u00a0';
-const thinspace = '\u2009'; // Thin space
-const nbthinspace = '\u202f'; // Thin no-break space
-
-/**
- * replace [free] with [fast] 
- * 
- * @param {string} text 
- * @returns {string}
- */
-function replaceFreeWithFast(text){
-    return text.replaceAll('[free]', '[fast]')
-}
-
-/**
- * add thin non-breaking space before "[per_investigator]"
- * 
- * @param {string} text 
- * @returns {string}
- */
-function addNBSpacePerInvestigator(text){
-    const regexp = /\s*\[per\_investigator\]/g
-    const matches = text.matchAll(regexp)
-
-    for(const match of matches){
-        text = text.replace(match[0], `${nbthinspace}[per_investigator]`)
-    }
-
-    return text
-}
-
-const rules = [
-    ...dashes, 
-    ellipses,
-    quotes,
-    punctuationMarks,
-    replaceFreeWithFast,
-    addNBSpacePerInvestigator
-]
-
-
-/* Ignore some cards for automatic punctuation */
-/** @type {Set<Card['code']>} */
-const exceptions = new Set([
-    // https://github.com/sapegin/richtypo.js/discussions/68
-    "01105"
-])
-
-
-for(const card of translationCards){
-    if(!exceptions.has(card.code)){
-        for(const prop of typoFixableProps){
-            const text = card[prop];
-
-            if(typeof text === 'string'){
-                // @ts-ignore
-                card[prop] = richtypo(rules, text)
-            }
-        }
-    }
-}
-
-
-
-await writeFile(translationFilepath, JSON.stringify(translationCards, null, 4))
+await uniformizeFilePunctuation(arkhamDataRoot, pack, file, language)
 
 console.info(`✅ Typo uniformized for ${pack}/${file}`)
