@@ -20,7 +20,7 @@ const nbthinspace = '\u202f'; // Thin no-break space
 /** @type {Set<Card['code']>} */
 const exceptions = new Set([
     // https://github.com/sapegin/richtypo.js/discussions/68
-    //"01105"
+    "01105"
 ])
 
 /**

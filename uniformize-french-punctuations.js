@@ -103,12 +103,11 @@ if(file){
     await uniformizeFilePunctuation(arkhamDataRoot, pack, file, language)
 }
 else{
-    console.info(`Choose a file with '--file <file>'`)
-    
     const packFiles = await getPackFileList(arkhamDataRoot, pack)
-    console.info('Choices: ', packFiles.join(' | '))
-
-    process.exit()
+    
+    await Promise.all(
+        packFiles.map(file => uniformizeFilePunctuation(arkhamDataRoot, pack, file, language))
+    )
 }
 
 
