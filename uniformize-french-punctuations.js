@@ -4,20 +4,19 @@
 
 import { styleText, parseArgs } from 'node:util'
 import {join} from 'node:path'
-import {stat, writeFile} from 'node:fs/promises'
+import {stat} from 'node:fs/promises'
 
-import richtypo from 'richtypo';
-import {dashes, ellipses, punctuationMarks, quotes} from 'richtypo/rules/fr';
 
 import { 
     getLanguageList, getPackFileList, getReferencePackList, 
-    packsDir, translationDir,
-    getReferenceAndTranslationCards
+    packsDir, translationDir
 } from './shared.js'
+import uniformizeFilePunctuation from './library/uniformiseFilePunctuation.js'
 
 
 const ARKHAM_DATA_ROOT = process.env.ARKHAM_DATA_ROOT
 const arkhamDataRoot = ARKHAM_DATA_ROOT || process.cwd()
+
 
 try{
     const rootStat = await stat(arkhamDataRoot)
@@ -100,102 +99,19 @@ catch(e){
 }
 
 
-if(!file){
-    console.info(`Choose a file with '--file <file>'`)
-    
+if(file){
+    await uniformizeFilePunctuation(arkhamDataRoot, pack, file, language)
+}
+else{
     const packFiles = await getPackFileList(arkhamDataRoot, pack)
-    console.info('Choices: ', packFiles.join(' | '))
-
-    process.exit()
-}
-
-// Verifying the corresponding translation file exists
-const translationFile = join(arkhamDataRoot, translationDir, language, packsDir, pack, file)
-
-try{
-    let _translationDirStat = await stat(translationFile)
-}
-catch(e){
-    // @ts-ignore
-    if(e.code === 'ENOENT'){
-        console.error(`❌ Translation file ${translationFile} does not exist`)
-    }
-    else{
-        console.error(`❌ Error trying to read ${translationFile}`, e)
-    }
-    process.exit(1)
-}
-
-
-const {translationCards, translationFilepath} = await getReferenceAndTranslationCards(arkhamDataRoot, pack, file, language);
-
-/** @type {(keyof Card)[]} */
-const typoFixableProps = ['name', 'back_name', 'text', 'back_text', 'flavor', 'back_flavor']
-
-const nbsp = '\u00a0';
-const thinspace = '\u2009'; // Thin space
-const nbthinspace = '\u202f'; // Thin no-break space
-
-/**
- * replace [free] with [fast] 
- * 
- * @param {string} text 
- * @returns {string}
- */
-function replaceFreeWithFast(text){
-    return text.replaceAll('[free]', '[fast]')
-}
-
-/**
- * add thin non-breaking space before "[per_investigator]"
- * 
- * @param {string} text 
- * @returns {string}
- */
-function addNBSpacePerInvestigator(text){
-    const regexp = /\s*\[per\_investigator\]/g
-    const matches = text.matchAll(regexp)
-
-    for(const match of matches){
-        text = text.replace(match[0], `${nbthinspace}[per_investigator]`)
-    }
-
-    return text
-}
-
-const rules = [
-    ...dashes, 
-    ellipses,
-    quotes,
-    punctuationMarks,
-    replaceFreeWithFast,
-    addNBSpacePerInvestigator
-]
-
-
-/* Ignore some cards for automatic punctuation */
-/** @type {Set<Card['code']>} */
-const exceptions = new Set([
-    // https://github.com/sapegin/richtypo.js/discussions/68
-    "01105"
-])
-
-
-for(const card of translationCards){
-    if(!exceptions.has(card.code)){
-        for(const prop of typoFixableProps){
-            const text = card[prop];
-
-            if(typeof text === 'string'){
-                // @ts-ignore
-                card[prop] = richtypo(rules, text)
-            }
-        }
-    }
+    
+    await Promise.all(
+        packFiles.map(file => uniformizeFilePunctuation(arkhamDataRoot, pack, file, language))
+    )
 }
 
 
 
-await writeFile(translationFilepath, JSON.stringify(translationCards, null, 4))
 
-console.info(`✅ Typo uniformized for ${pack}/${file}`)
+
+
