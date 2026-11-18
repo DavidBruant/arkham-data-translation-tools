@@ -235,7 +235,7 @@ export const sameTranslationNames = new Set([
     'Doppelgänger',
     'Mauser Tankgewehr M1918',
 
-    // side
+    // side_stories
     'Garden District',
     'Broadmoor',
     'Faubourg Marigny',
@@ -255,6 +255,10 @@ export const sameTranslationNames = new Set([
 
     // parallel
     'Directive',
+
+    // promotional
+    'Yaztaroth',
+    'Liber Omnium Finium',
 
 ])
 
@@ -722,6 +726,7 @@ const staticReplacements = new Map([
     ['for each damage on you', 'pour chaque dégât sur vous'],
 
     // limits/max
+    ['Group limit one success per game', `Limite collective d'une réussite par partie`],
     ['Group limit once per game', `Limite collective d'une fois par partie`],
     ['Limit once per game', `Limite d'une fois par partie`],
     ['Group limit once per round', `Limite collective d'une fois par round`],
@@ -753,6 +758,7 @@ const staticReplacements = new Map([
     ['abyss', `abîme`],
     ['dreamer', 'rêveur'],
     ['exploration deck', `deck Exploration`],
+    ['<b>Haunted</b>', '<b>Hanté</b>'],
     ['haunted ability', `capacité Hanté`],
 
     // return
@@ -781,6 +787,7 @@ const staticReplacements = new Map([
     ['Each defeated investigator', `Chaque investigateur vaincu`],
     ['investigators may', `les investigateurs ont le droit de`],
     ['Each investigator must', 'Chaque investigateur doit'],
+    ['undefeated investigator', 'investigateur non-vaincu'],
     ['The lead investigator', `L'investigateur principal`],
     ['the lead investigator', `l'investigateur principal`],
     ['with no investigators', 'sans investigateur'],
@@ -826,20 +833,20 @@ const staticReplacements = new Map([
         `Shuffle the encounter discard pile into the encounter deck.`, 
         `mélangez la pile de défausse Rencontre dans le deck Rencontre.`
     ],
-    ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
     ['the top card of the encounter deck', 'la carte du dessus du deck Rencontre'],
     ['from the top of the encounter deck', 'du dessus du deck Rencontre'],
-    ['next to the agenda deck', `à coté du deck Intrigue`],
-    ['from the top of your deck', 'du dessus de votre deck'],
     ['the top card of your deck', 'la carte du dessus de votre deck'],
-    ['Act deck', 'deck Acte'],
-    ['act deck', 'deck Acte'],
+    ['Shuffle the encounter deck', 'Mélangez le deck Rencontre'],
+    ['from the top of your deck', 'du dessus de votre deck'],
+    ['next to the agenda deck', `à coté du deck Intrigue`],
+    ['into the encounter deck', 'dans le deck Rencontre'],
+    ['into your deck', 'dans votre deck'],
+    ['of your deck', 'de votre deck'],
+    ['encounter deck', 'deck Rencontre'],
     ['Agenda deck', 'deck Intrigue'],
     ['agenda deck', 'deck Intrigue'],
-    ['encounter deck', 'deck Rencontre'],
-    ['of your deck', 'de votre deck'],
-    ['into the encounter deck', 'dans votre deck Rencontre'],
-    ['into your deck', 'dans votre deck'],
+    ['Act deck', 'deck Acte'],
+    ['act deck', 'deck Acte'],
 
     // discard
     ['the encounter discard pile', 'la pile de défausse Rencontre'],
@@ -866,6 +873,7 @@ const staticReplacements = new Map([
     ['Campaign Log', `Carnet de Campagne`],
     ['no clues remaining', `pas d'indice restant`],
     ['add it to the victory display', 'ajoutez-la à la pile de victoire'],
+    ['does not ready during the upkeep phase this round', `ne se redresse pas lors de la phase d'Entretien de ce round`],
     ['to the victory display', 'à la pile de victoire'],
     ['the victory display', 'la pile de victoire'],
     ['When you would draw', 'Quand vous devriez piocher'],
@@ -945,6 +953,7 @@ const staticReplacements = new Map([
     ['remember that', `souvenez-vous que`], 
     ['as a group', 'collectivement'],
     ['encounter set', `set de rencontre`],
+    ['from the game', `de la partie`],
     ['in the game', `dans la partie`],
 
     ['discarded', 'défaussé'],
@@ -986,6 +995,7 @@ const staticReplacements = new Map([
     ['<b>Parley</b>', '<b>Discussion</b>'],
     ['<b>Objective</b>', '<b>Objectif</b>'],
     ['<b>Move</b>', '<b>Se Déplacer</b>'],
+    ['<b>Investigate.</b>', '<b>Enquêter</b>.'],
     ['<b>Fight.</b>', '<b>Combattre</b>.'],
     ['<b>Evade.</b>', '<b>Échapper à</b>.'],
     ['<b>Explore.</b>', `<b>Explorer</b>.`],
@@ -1023,6 +1033,7 @@ const staticReplacements = new Map([
     ['commit', 'attribuer'],
     ['this card', 'cette carte'],
     ['this story card', 'cette carte Histoire'],
+    ['story asset', `soutien d'histoire`],
     ['card', 'carte'],
     ['event', 'événement'],
     ['damage', 'dégât'],
@@ -1069,6 +1080,7 @@ const staticReplacements = new Map([
     ['the most', `le plus`],
     ['adjacent to', 'adjacent à'],
     [' on it', ' dessus'],
+    [' on her', ' sur elle'],
     ['Flip it over', `Retournez-la`],
     ['Flip back', 'Retournez'],
     ['flip back', 'retournez'],
@@ -1129,7 +1141,9 @@ const staticReplacements = new Map([
     [' the ', ' le '],
     [' you,', ' vous,'],
     [' you ', ' vous '],
+    [' she ', ' elle '],
     [' they ', ' ils '],
+    ['even if ', `même si `],
     [' as if ', ' comme si '],
     [' if ', ' si '],
     ['If ', 'Si '],
